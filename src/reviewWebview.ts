@@ -2,18 +2,24 @@ import * as vscode from 'vscode';
 import { Card } from './types';
 import { StorageManager } from './storage';
 import { SM2Algorithm } from './sm2';
+import { StatisticsManager } from './statistics';
 
 export class ReviewWebviewProvider {
   private panel: vscode.WebviewPanel | undefined;
   private cards: Card[] = [];
   private currentIndex: number = 0;
   private showingAnswer: boolean = false;
+  private correctCount: number = 0;
+  private startTime: number = 0;
+  private statisticsManager: StatisticsManager;
 
   constructor(
     private context: vscode.ExtensionContext,
     private storage: StorageManager,
     private onComplete: () => void
-  ) {}
+  ) {
+    this.statisticsManager = new StatisticsManager(context);
+  }
 
   async show() {
     const allCards = await this.storage.getCards();
@@ -26,6 +32,8 @@ export class ReviewWebviewProvider {
 
     this.currentIndex = 0;
     this.showingAnswer = false;
+    this.correctCount = 0;
+    this.startTime = Date.now();
 
     this.panel = vscode.window.createWebviewPanel(
       'kiokuReview',
@@ -72,6 +80,11 @@ export class ReviewWebviewProvider {
     const updatedCard = SM2Algorithm.calculateNextReview(card, quality);
     await this.storage.updateCard(updatedCard);
 
+    // Track correct answers (quality >= 3)
+    if (quality >= 3) {
+      this.correctCount++;
+    }
+
     this.nextCard();
   }
 
@@ -86,12 +99,25 @@ export class ReviewWebviewProvider {
     }
   }
 
-  private complete() {
+  private async complete() {
+    // Record review session
+    const durationSeconds = Math.floor((Date.now() - this.startTime) / 1000);
+    const today = new Date().toISOString().split('T')[0];
+
+    await this.statisticsManager.recordSession({
+      date: today,
+      cards_reviewed: this.cards.length,
+      cards_correct: this.correctCount,
+      duration_seconds: durationSeconds
+    });
+
     if (this.panel) {
       this.panel.dispose();
     }
+
+    const accuracy = Math.round((this.correctCount / this.cards.length) * 100);
     vscode.window.showInformationMessage(
-      `Review completed! Reviewed ${this.cards.length} cards 🎉`
+      `Review completed! ${this.cards.length} cards, ${accuracy}% accuracy 🎉`
     );
     this.onComplete();
   }
