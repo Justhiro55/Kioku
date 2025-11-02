@@ -64,6 +64,10 @@
         "title": "Kioku: Clear Filters"
       },
       {
+        "command": "kioku.showStats",
+        "title": "Kioku: Show Statistics"
+      },
+      {
         "command": "kioku.migrateToSQLite",
         "title": "Kioku: Migrate to SQLite"
       }

@@ -2,8 +2,10 @@ import * as vscode from 'vscode';
 import { StorageManager } from './storage';
 import { DeckTreeProvider } from './deckTreeProvider';
 import { ReviewWebviewProvider } from './reviewWebview';
+import { StatsWebviewProvider } from './statsWebview';
 import { exportCardsToCSV, importCardsFromCSV } from './csvHandler';
 import { FilterManager } from './filterManager';
+import { StatisticsManager } from './statistics';
 import { migrateToSQLite } from './migration';
 import { Card } from './types';
 import { SM2Algorithm } from './sm2';
@@ -11,6 +13,7 @@ import { SM2Algorithm } from './sm2';
 let storage: StorageManager;
 let deckTreeProvider: DeckTreeProvider;
 let filterManager: FilterManager;
+let statisticsManager: StatisticsManager;
 let statusBarItem: vscode.StatusBarItem;
 let context: vscode.ExtensionContext;
 
@@ -24,6 +27,9 @@ export function activate(ctx: vscode.ExtensionContext) {
 
   // Initialize filter manager
   filterManager = new FilterManager();
+
+  // Initialize statistics manager
+  statisticsManager = new StatisticsManager(context);
 
   // Initialize tree view
   deckTreeProvider = new DeckTreeProvider(storage);
@@ -56,6 +62,7 @@ export function activate(ctx: vscode.ExtensionContext) {
     vscode.commands.registerCommand('kioku.searchCards', searchCards),
     vscode.commands.registerCommand('kioku.filterByTag', filterByTag),
     vscode.commands.registerCommand('kioku.clearFilters', clearFilters),
+    vscode.commands.registerCommand('kioku.showStats', showStats),
     vscode.commands.registerCommand('kioku.migrateToSQLite', () => migrateToSQLite(context)),
     vscode.commands.registerCommand('kioku.refreshDecks', () => deckTreeProvider.refresh())
   );
@@ -602,6 +609,14 @@ async function filterByTag() {
 function clearFilters() {
   filterManager.clearFilters();
   vscode.window.showInformationMessage('Filters cleared');
+}
+
+/**
+ * Show statistics dashboard
+ */
+async function showStats() {
+  const statsWebview = new StatsWebviewProvider(context, storage, statisticsManager);
+  await statsWebview.show();
 }
 
 /**
