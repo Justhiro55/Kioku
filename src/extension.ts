@@ -1,15 +1,20 @@
 import * as vscode from 'vscode';
 import { StorageManager } from './storage';
 import { DeckTreeProvider } from './deckTreeProvider';
+import { ReviewWebviewProvider } from './reviewWebview';
+import { exportCardsToCSV, importCardsFromCSV } from './csvHandler';
 import { Card } from './types';
 import { SM2Algorithm } from './sm2';
 
 let storage: StorageManager;
 let deckTreeProvider: DeckTreeProvider;
 let statusBarItem: vscode.StatusBarItem;
+let context: vscode.ExtensionContext;
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(ctx: vscode.ExtensionContext) {
   console.log('Kioku extension is now active');
+
+  context = ctx;
 
   // Initialize storage
   storage = new StorageManager(context);
@@ -29,6 +34,16 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('kioku.addFromSelection', addFromSelection),
     vscode.commands.registerCommand('kioku.startReview', startReview),
     vscode.commands.registerCommand('kioku.openDeck', openDeck),
+    vscode.commands.registerCommand('kioku.editCard', editCard),
+    vscode.commands.registerCommand('kioku.deleteCard', deleteCard),
+    vscode.commands.registerCommand('kioku.createDeck', createDeck),
+    vscode.commands.registerCommand('kioku.deleteDeck', deleteDeck),
+    vscode.commands.registerCommand('kioku.exportCSV', () => exportCardsToCSV(storage)),
+    vscode.commands.registerCommand('kioku.importCSV', async () => {
+      await importCardsFromCSV(storage);
+      deckTreeProvider.refresh();
+      updateStatusBar();
+    }),
     vscode.commands.registerCommand('kioku.refreshDecks', () => deckTreeProvider.refresh())
   );
 
@@ -111,6 +126,29 @@ async function addFromSelection() {
  * Start review session
  */
 async function startReview() {
+  const config = vscode.workspace.getConfiguration('kioku');
+  const useWebview = config.get<boolean>('useWebview', true);
+
+  if (useWebview) {
+    const webviewProvider = new ReviewWebviewProvider(
+      context,
+      storage,
+      () => {
+        deckTreeProvider.refresh();
+        updateStatusBar();
+      }
+    );
+    await webviewProvider.show();
+  } else {
+    // Fallback to input box mode
+    await startReviewInputMode();
+  }
+}
+
+/**
+ * Start review session with input boxes (legacy mode)
+ */
+async function startReviewInputMode() {
   const allCards = await storage.getCards();
   const dueCards = SM2Algorithm.getDueCards(allCards);
 
@@ -252,6 +290,205 @@ async function openDeck() {
   if (selected) {
     vscode.window.showInformationMessage(`Opening deck: ${selected.deck.name}`);
     // TODO: Open deck in webview or custom editor
+  }
+}
+
+/**
+ * Edit a card
+ */
+async function editCard(item: any) {
+  let card: Card | undefined;
+
+  if (item && item.card) {
+    card = item.card;
+  } else {
+    // Select card from all cards
+    const allCards = await storage.getCards();
+    const cardItems = allCards.map(c => ({
+      label: c.front,
+      description: c.back,
+      card: c
+    }));
+
+    const selected = await vscode.window.showQuickPick(cardItems, {
+      placeHolder: 'Select a card to edit'
+    });
+
+    if (!selected) {
+      return;
+    }
+    card = selected.card;
+  }
+
+  if (!card) {
+    return;
+  }
+
+  // Edit front
+  const newFront = await vscode.window.showInputBox({
+    prompt: 'Front of the card',
+    value: card.front,
+    placeHolder: 'Question'
+  });
+
+  if (newFront === undefined) {
+    return;
+  }
+
+  // Edit back
+  const newBack = await vscode.window.showInputBox({
+    prompt: 'Back of the card',
+    value: card.back,
+    placeHolder: 'Answer'
+  });
+
+  if (newBack === undefined) {
+    return;
+  }
+
+  // Update card
+  const updatedCard: Card = {
+    ...card,
+    front: newFront,
+    back: newBack
+  };
+
+  await storage.updateCard(updatedCard);
+  vscode.window.showInformationMessage('Card updated');
+
+  deckTreeProvider.refresh();
+}
+
+/**
+ * Delete a card
+ */
+async function deleteCard(item: any) {
+  let card: Card | undefined;
+
+  if (item && item.card) {
+    card = item.card;
+  } else {
+    // Select card from all cards
+    const allCards = await storage.getCards();
+    const cardItems = allCards.map(c => ({
+      label: c.front,
+      description: c.back,
+      card: c
+    }));
+
+    const selected = await vscode.window.showQuickPick(cardItems, {
+      placeHolder: 'Select a card to delete'
+    });
+
+    if (!selected) {
+      return;
+    }
+    card = selected.card;
+  }
+
+  if (!card) {
+    return;
+  }
+
+  // Confirm deletion
+  const confirm = await vscode.window.showWarningMessage(
+    `Delete card: "${card.front}"?`,
+    { modal: true },
+    'Delete'
+  );
+
+  if (confirm === 'Delete') {
+    await storage.deleteCard(card.id);
+    vscode.window.showInformationMessage('Card deleted');
+
+    deckTreeProvider.refresh();
+    updateStatusBar();
+  }
+}
+
+/**
+ * Create a new deck
+ */
+async function createDeck() {
+  const deckName = await vscode.window.showInputBox({
+    prompt: 'Enter deck name',
+    placeHolder: 'My Deck',
+    validateInput: (value) => {
+      if (!value || value.trim().length === 0) {
+        return 'Deck name cannot be empty';
+      }
+      return null;
+    }
+  });
+
+  if (!deckName) {
+    return;
+  }
+
+  const newDeck = {
+    id: `deck-${Date.now()}`,
+    name: deckName,
+    card_ids: [],
+    created_at: new Date().toISOString()
+  };
+
+  await storage.saveDeck(newDeck);
+  vscode.window.showInformationMessage(`Deck created: ${deckName}`);
+
+  deckTreeProvider.refresh();
+}
+
+/**
+ * Delete a deck
+ */
+async function deleteDeck(item: any) {
+  let deckId: string | undefined;
+
+  if (item && item.deck) {
+    deckId = item.deck.id;
+  } else {
+    const decks = await storage.getDecks();
+    const deckItems = decks.map(d => ({
+      label: d.name,
+      description: `${d.card_ids.length} cards`,
+      id: d.id
+    }));
+
+    const selected = await vscode.window.showQuickPick(deckItems, {
+      placeHolder: 'Select a deck to delete'
+    });
+
+    if (!selected) {
+      return;
+    }
+    deckId = selected.id;
+  }
+
+  if (!deckId) {
+    return;
+  }
+
+  const deck = await storage.getDeck(deckId);
+  if (!deck) {
+    return;
+  }
+
+  // Confirm deletion
+  const confirm = await vscode.window.showWarningMessage(
+    `Delete deck "${deck.name}" and all its ${deck.card_ids.length} cards?`,
+    { modal: true },
+    'Delete'
+  );
+
+  if (confirm === 'Delete') {
+    try {
+      await storage.deleteDeck(deckId);
+      vscode.window.showInformationMessage('Deck deleted');
+      deckTreeProvider.refresh();
+      updateStatusBar();
+    } catch (error: any) {
+      vscode.window.showErrorMessage(error.message);
+    }
   }
 }
 
