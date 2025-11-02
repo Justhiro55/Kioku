@@ -58,6 +58,39 @@ export class StorageManager {
   }
 
   /**
+   * Get cards by tag
+   */
+  async getCardsByTag(tag: string): Promise<Card[]> {
+    const cards = await this.getCards();
+    return cards.filter(card => card.tags.includes(tag));
+  }
+
+  /**
+   * Search cards by front or back text
+   */
+  async searchCards(query: string): Promise<Card[]> {
+    const cards = await this.getCards();
+    const lowerQuery = query.toLowerCase();
+    return cards.filter(card =>
+      card.front.toLowerCase().includes(lowerQuery) ||
+      card.back.toLowerCase().includes(lowerQuery) ||
+      card.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+    );
+  }
+
+  /**
+   * Get all unique tags
+   */
+  async getAllTags(): Promise<string[]> {
+    const cards = await this.getCards();
+    const tagsSet = new Set<string>();
+    cards.forEach(card => {
+      card.tags.forEach(tag => tagsSet.add(tag));
+    });
+    return Array.from(tagsSet).sort();
+  }
+
+  /**
    * Save a new card
    */
   async saveCard(card: Omit<Card, 'id' | 'created_at'>): Promise<Card> {

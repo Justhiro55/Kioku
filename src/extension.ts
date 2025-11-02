@@ -3,11 +3,14 @@ import { StorageManager } from './storage';
 import { DeckTreeProvider } from './deckTreeProvider';
 import { ReviewWebviewProvider } from './reviewWebview';
 import { exportCardsToCSV, importCardsFromCSV } from './csvHandler';
+import { FilterManager } from './filterManager';
+import { migrateToSQLite } from './migration';
 import { Card } from './types';
 import { SM2Algorithm } from './sm2';
 
 let storage: StorageManager;
 let deckTreeProvider: DeckTreeProvider;
+let filterManager: FilterManager;
 let statusBarItem: vscode.StatusBarItem;
 let context: vscode.ExtensionContext;
 
@@ -19,9 +22,15 @@ export function activate(ctx: vscode.ExtensionContext) {
   // Initialize storage
   storage = new StorageManager(context);
 
+  // Initialize filter manager
+  filterManager = new FilterManager();
+
   // Initialize tree view
   deckTreeProvider = new DeckTreeProvider(storage);
   vscode.window.registerTreeDataProvider('kioku-decks', deckTreeProvider);
+
+  // Refresh tree view when filters change
+  filterManager.onDidChangeFilter(() => deckTreeProvider.refresh());
 
   // Initialize status bar
   statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
@@ -44,6 +53,10 @@ export function activate(ctx: vscode.ExtensionContext) {
       deckTreeProvider.refresh();
       updateStatusBar();
     }),
+    vscode.commands.registerCommand('kioku.searchCards', searchCards),
+    vscode.commands.registerCommand('kioku.filterByTag', filterByTag),
+    vscode.commands.registerCommand('kioku.clearFilters', clearFilters),
+    vscode.commands.registerCommand('kioku.migrateToSQLite', () => migrateToSQLite(context)),
     vscode.commands.registerCommand('kioku.refreshDecks', () => deckTreeProvider.refresh())
   );
 
@@ -98,6 +111,17 @@ async function addFromSelection() {
     return;
   }
 
+  // Optional: Add tags
+  const tagsInput = await vscode.window.showInputBox({
+    prompt: 'Tags (comma-separated, optional)',
+    placeHolder: 'e.g., vocabulary, japanese'
+  }) || '';
+
+  const tags = tagsInput
+    .split(',')
+    .map(t => t.trim())
+    .filter(t => t.length > 0);
+
   // Get default deck
   const defaultDeck = await storage.getDefaultDeck();
 
@@ -106,7 +130,7 @@ async function addFromSelection() {
   const card: Omit<Card, 'id' | 'created_at'> = {
     front,
     back,
-    tags: [],
+    tags,
     due_at: now.toISOString(), // Due immediately
     interval: 0,
     reps: 0,
@@ -346,11 +370,28 @@ async function editCard(item: any) {
     return;
   }
 
+  // Edit tags
+  const newTagsInput = await vscode.window.showInputBox({
+    prompt: 'Tags (comma-separated, optional)',
+    value: card.tags.join(', '),
+    placeHolder: 'e.g., vocabulary, japanese'
+  });
+
+  if (newTagsInput === undefined) {
+    return;
+  }
+
+  const newTags = newTagsInput
+    .split(',')
+    .map(t => t.trim())
+    .filter(t => t.length > 0);
+
   // Update card
   const updatedCard: Card = {
     ...card,
     front: newFront,
-    back: newBack
+    back: newBack,
+    tags: newTags
   };
 
   await storage.updateCard(updatedCard);
@@ -490,6 +531,77 @@ async function deleteDeck(item: any) {
       vscode.window.showErrorMessage(error.message);
     }
   }
+}
+
+/**
+ * Search cards
+ */
+async function searchCards() {
+  const query = await vscode.window.showInputBox({
+    prompt: 'Search cards (front, back, or tags)',
+    placeHolder: 'Enter search term...'
+  });
+
+  if (!query) {
+    return;
+  }
+
+  const results = await storage.searchCards(query);
+
+  if (results.length === 0) {
+    vscode.window.showInformationMessage(`No cards found for "${query}"`);
+    return;
+  }
+
+  const items = results.map(card => ({
+    label: card.front,
+    description: card.back,
+    detail: card.tags.length > 0 ? `Tags: ${card.tags.join(', ')}` : undefined,
+    card
+  }));
+
+  const selected = await vscode.window.showQuickPick(items, {
+    placeHolder: `Found ${results.length} card(s)`
+  });
+
+  if (selected) {
+    filterManager.setSearchQuery(query);
+    vscode.window.showInformationMessage(`Filtered by search: "${query}"`);
+  }
+}
+
+/**
+ * Filter cards by tag
+ */
+async function filterByTag() {
+  const allTags = await storage.getAllTags();
+
+  if (allTags.length === 0) {
+    vscode.window.showInformationMessage('No tags found');
+    return;
+  }
+
+  const tagItems = allTags.map(tag => ({
+    label: tag,
+    tag
+  }));
+
+  const selected = await vscode.window.showQuickPick(tagItems, {
+    placeHolder: 'Select a tag to filter'
+  });
+
+  if (selected) {
+    filterManager.setTagFilter(selected.tag);
+    vscode.window.showInformationMessage(`Filtered by tag: ${selected.tag}`);
+  }
+}
+
+/**
+ * Clear all filters
+ */
+function clearFilters() {
+  filterManager.clearFilters();
+  vscode.window.showInformationMessage('Filters cleared');
 }
 
 /**

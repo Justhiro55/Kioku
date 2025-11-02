@@ -67,7 +67,11 @@ export class CardTreeItem extends TreeItem {
     super(label, vscode.TreeItemCollapsibleState.None);
     this.contextValue = 'card';
     this.iconPath = new vscode.ThemeIcon(isDue ? 'circle-filled' : 'circle-outline');
-    this.tooltip = `Front: ${card.front}\nBack: ${card.back}\nDue: ${new Date(card.due_at).toLocaleDateString()}`;
-    this.description = isDue ? '📌 Due' : '';
+
+    const tagsStr = card.tags.length > 0 ? `\nTags: ${card.tags.join(', ')}` : '';
+    this.tooltip = `Front: ${card.front}\nBack: ${card.back}\nDue: ${new Date(card.due_at).toLocaleDateString()}${tagsStr}`;
+
+    const tagsLabel = card.tags.length > 0 ? `[${card.tags.join(', ')}]` : '';
+    this.description = isDue ? `📌 Due ${tagsLabel}` : tagsLabel;
   }
 }
