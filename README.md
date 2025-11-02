@@ -1,8 +1,8 @@
 # Kioku - VSCode Flashcard Extension
 
-[![CI](https://github.com/yourusername/kioku/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/kioku/actions/workflows/ci.yml)
-[![Release](https://github.com/yourusername/kioku/actions/workflows/release.yml/badge.svg)](https://github.com/yourusername/kioku/actions/workflows/release.yml)
-[![Version](https://img.shields.io/github/v/release/yourusername/kioku)](https://github.com/yourusername/kioku/releases)
+[![CI](https://github.com/Justhiro55/Kioku/actions/workflows/ci.yml/badge.svg)](https://github.com/Justhiro55/Kioku/actions/workflows/ci.yml)
+[![Release](https://github.com/Justhiro55/Kioku/actions/workflows/release.yml/badge.svg)](https://github.com/Justhiro55/Kioku/actions/workflows/release.yml)
+[![Version](https://img.shields.io/github/v/release/Justhiro55/Kioku)](https://github.com/Justhiro55/Kioku/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 🧠 A powerful flashcard learning extension for VSCode with spaced repetition.
@@ -38,8 +38,8 @@
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/kioku.git
-   cd kioku
+   git clone https://github.com/Justhiro55/Kioku.git
+   cd Kioku
    ```
 
 2. Install dependencies:
