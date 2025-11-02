@@ -1,12 +1,38 @@
 {
   "name": "kioku",
-  "displayName": "Kioku",
-  "description": "A flashcard learning extension for VSCode with spaced repetition",
-  "version": "0.1.0",
+  "displayName": "Kioku - Flashcard Learning",
+  "description": "Powerful flashcard learning with spaced repetition, tags, search, and progress tracking",
+  "version": "0.4.0",
+  "publisher": "your-publisher-name",
+  "author": {
+    "name": "Your Name"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/kioku"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/kioku/issues"
+  },
+  "homepage": "https://github.com/yourusername/kioku#readme",
+  "keywords": [
+    "flashcard",
+    "flashcards",
+    "spaced repetition",
+    "learning",
+    "study",
+    "memorization",
+    "anki",
+    "sm2",
+    "education"
+  ],
+  "icon": "resources/icon.png",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
+    "Education",
     "Other"
   ],
   "activationEvents": [

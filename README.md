@@ -4,11 +4,28 @@
 
 ## Features
 
+### Core Learning
 - **📝 Quick Card Creation**: Select text in your editor and convert it to flashcards
 - **🔄 Spaced Repetition**: Built-in SM-2 algorithm for optimal learning
 - **✍️ Spell Mode**: Type answers to actively recall information
-- **📊 Visual Progress**: Track your learning with deck views and due card counters
-- **💾 Local Storage**: All data stored locally in VSCode's global state
+- **🎨 Modern Review UI**: Beautiful webview-based review interface
+
+### Organization
+- **📁 Deck Management**: Create and organize multiple decks
+- **🏷️ Tags**: Categorize cards with tags
+- **🔍 Search**: Find cards by front, back, or tags
+- **🎯 Filtering**: Filter cards by tags or search query
+
+### Data Management
+- **💾 Flexible Storage**: Choose between globalState or SQLite
+- **📊 CSV Import/Export**: Share and backup your cards
+- **🔄 Easy Migration**: One-click migration to SQLite
+
+### Progress Tracking
+- **📈 Statistics Dashboard**: View your learning progress
+- **📅 Contribution Calendar**: GitHub-style calendar showing daily reviews
+- **🔥 Streak Tracking**: Track consecutive learning days
+- **📊 Accuracy Metrics**: Monitor your performance over time
 
 ## Installation
 
@@ -39,7 +56,7 @@
 1. Select text in any editor (format: `word - meaning`)
 2. Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
 3. Run `Kioku: Add from Selection`
-4. Adjust front/back if needed
+4. Enter front, back, and optional tags
 
 ### Reviewing Cards
 
@@ -48,42 +65,63 @@
 3. Type your answer (if spell mode is enabled)
 4. Rate how well you remembered (0-5)
 
-### Viewing Decks
+### Managing Decks
 
 - Click the Kioku icon in the Activity Bar
-- See all your decks and due cards
+- Click the + button to create a new deck
+- Right-click on decks to delete
 - Cards with 📌 are due for review
 
-### Status Bar
+### Viewing Statistics
 
-The status bar shows how many cards are due for review. Click it to start a review session.
+1. Open Command Palette
+2. Run `Kioku: Show Statistics`
+3. View your learning calendar, streak, and accuracy
 
 ## Commands
 
+### Learning
 - `Kioku: Add from Selection` - Create card from selected text
 - `Kioku: Start Review` - Begin review session
-- `Kioku: Open Deck` - View deck details
+- `Kioku: Edit Card` - Edit an existing card
+- `Kioku: Delete Card` - Delete a card
+
+### Organization
+- `Kioku: Create Deck` - Create a new deck
+- `Kioku: Delete Deck` - Delete a deck
+- `Kioku: Search Cards` - Search across all cards
+- `Kioku: Filter by Tag` - Filter cards by tag
+- `Kioku: Clear Filters` - Remove all filters
+
+### Data
+- `Kioku: Export to CSV` - Export all cards
+- `Kioku: Import from CSV` - Import cards from CSV
+- `Kioku: Migrate to SQLite` - Migrate to SQLite storage
+
+### Analytics
+- `Kioku: Show Statistics` - View learning statistics
 
 ## Settings
 
+- `kioku.useWebview` (default: `true`) - Use webview UI for reviews
 - `kioku.spellMode` (default: `true`) - Enable typing answers
 - `kioku.reviewAlgorithm` (default: `"sm2"`) - Algorithm: `"sm2"` or `"basic"`
-- `kioku.storageType` (default: `"globalState"`) - Storage backend
+- `kioku.storageType` (default: `"globalState"`) - Storage: `"globalState"` or `"sqlite"`
 
 ## Spaced Repetition (SM-2)
 
 Kioku uses the SuperMemo 2 (SM-2) algorithm:
 
-- **5 - Perfect**: Instant recall
-- **4 - Good**: Correct after brief thought
-- **3 - OK**: Correct with difficulty
-- **2 - Hard**: Incorrect but recognized
-- **1 - Again**: Barely recalled
-- **0 - Forgot**: Complete blackout
+- **5 - Perfect ✨**: Instant recall
+- **4 - Good ✅**: Correct after brief thought
+- **3 - OK 👍**: Correct with difficulty
+- **2 - Hard 😓**: Incorrect but recognized
+- **1 - Again 🔄**: Barely recalled
+- **0 - Forgot ❌**: Complete blackout
 
 Cards are automatically scheduled based on your performance.
 
-## Roadmap
+## Development Status
 
 ### Sprint 1 (MVP) ✅
 - [x] Card CRUD operations
@@ -93,21 +131,48 @@ Cards are automatically scheduled based on your performance.
 - [x] Status bar
 - [x] SM-2 algorithm
 
-### Sprint 2 (Planned)
-- [ ] Webview-based review UI
-- [ ] Card editing
-- [ ] Deck management
-- [ ] CSV import/export
+### Sprint 2 (Enhanced UX) ✅
+- [x] Webview-based review UI
+- [x] Card editing
+- [x] Deck management
+- [x] CSV import/export
 
-### Sprint 3 (Planned)
-- [ ] SQLite storage backend
-- [ ] Tags and filtering
-- [ ] Search functionality
+### Sprint 3 (Data & Search) ✅
+- [x] SQLite storage backend
+- [x] Tags and filtering
+- [x] Search functionality
+- [x] Migration tool
 
-### Sprint 4 (Planned)
-- [ ] GitHub integration
-- [ ] Contribution calendar
-- [ ] Statistics dashboard
+### Sprint 4 (Analytics) ✅
+- [x] Review session tracking
+- [x] Contribution calendar
+- [x] Statistics dashboard
+- [x] Streak calculation
+
+### Future Enhancements
+- [ ] GitHub OAuth integration
+- [ ] Cloud sync via Gist
+- [ ] Media support (images, audio)
+- [ ] AI card generation
+- [ ] Gamification (XP, badges)
+
+## Architecture
+
+```
+src/
+├── extension.ts          # Main entry point
+├── types.ts             # Type definitions
+├── storage.ts           # GlobalState storage
+├── sqliteStorage.ts     # SQLite storage
+├── sm2.ts               # Spaced repetition algorithm
+├── statistics.ts        # Session tracking
+├── deckTreeProvider.ts  # Sidebar UI
+├── reviewWebview.ts     # Review UI
+├── statsWebview.ts      # Statistics UI
+├── csvHandler.ts        # Import/export
+├── filterManager.ts     # Filtering logic
+└── migration.ts         # Data migration
+```
 
 ## Development
 
