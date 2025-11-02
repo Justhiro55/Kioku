@@ -1,0 +1,81 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    name: Validate PR
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Check code formatting
+      run: npm run lint
+
+    - name: Type check
+      run: npx tsc --noEmit
+
+    - name: Build
+      run: npm run compile
+
+    - name: Check for TODO/FIXME
+      run: |
+        if git diff origin/main...HEAD -- '*.ts' '*.js' | grep -E "TODO|FIXME"; then
+          echo "⚠️ Found TODO/FIXME in changes. Please address before merging."
+          exit 0
+        fi
+
+    - name: Check commit messages
+      run: |
+        commits=$(git log origin/main..HEAD --pretty=format:"%s")
+        echo "$commits" | while read msg; do
+          if ! echo "$msg" | grep -qE "^(feat|fix|docs|chore|refactor|test|style|perf|ci|build):"; then
+            echo "❌ Invalid commit message: $msg"
+            echo "Must start with: feat|fix|docs|chore|refactor|test|style|perf|ci|build"
+            exit 1
+          fi
+        done
+
+  size-check:
+    name: Check Package Size
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build and Package
+      run: |
+        npm run compile
+        npx vsce package
+
+    - name: Check VSIX size
+      run: |
+        size=$(du -k *.vsix | cut -f1)
+        echo "Package size: ${size}KB"
+        if [ $size -gt 10240 ]; then
+          echo "⚠️ Warning: Package size exceeds 10MB"
+          exit 1
+        fi

@@ -1,5 +1,10 @@
 # Kioku - VSCode Flashcard Extension
 
+[![CI](https://github.com/yourusername/kioku/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/kioku/actions/workflows/ci.yml)
+[![Release](https://github.com/yourusername/kioku/actions/workflows/release.yml/badge.svg)](https://github.com/yourusername/kioku/actions/workflows/release.yml)
+[![Version](https://img.shields.io/github/v/release/yourusername/kioku)](https://github.com/yourusername/kioku/releases)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 🧠 A powerful flashcard learning extension for VSCode with spaced repetition.
 
 ## Features
