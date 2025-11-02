@@ -50,6 +50,22 @@
       {
         "command": "kioku.importCSV",
         "title": "Kioku: Import from CSV"
+      },
+      {
+        "command": "kioku.searchCards",
+        "title": "Kioku: Search Cards"
+      },
+      {
+        "command": "kioku.filterByTag",
+        "title": "Kioku: Filter by Tag"
+      },
+      {
+        "command": "kioku.clearFilters",
+        "title": "Kioku: Clear Filters"
+      },
+      {
+        "command": "kioku.migrateToSQLite",
+        "title": "Kioku: Migrate to SQLite"
       }
     ],
     "menus": {
@@ -135,12 +151,14 @@
     "@types/vscode": "^1.85.0",
     "@types/node": "18.x",
     "@types/uuid": "^9.0.7",
+    "@types/better-sqlite3": "^7.6.8",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "eslint": "^8.54.0",
     "typescript": "^5.3.2"
   },
   "dependencies": {
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "better-sqlite3": "^9.2.2"
   }
 }
