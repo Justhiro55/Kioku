@@ -145,9 +145,6 @@ export class ReviewWebviewProvider {
     progress: number,
     total: number
   ): string {
-    const config = vscode.workspace.getConfiguration('kioku');
-    const spellMode = config.get<boolean>('spellMode', true);
-    const simpleMode = config.get<boolean>('simpleMode', false);
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -345,18 +342,6 @@ export class ReviewWebviewProvider {
     <div class="card">
       <div class="front">${this.escapeHtml(card.front)}</div>
 
-      ${!showingAnswer && spellMode ? `
-        <div class="input-container">
-          <input
-            type="text"
-            id="answer-input"
-            placeholder="Type your answer..."
-            autofocus
-          />
-          <div class="hint">Press Enter to check</div>
-        </div>
-      ` : ''}
-
       ${showingAnswer ? `
         <div class="answer">${this.escapeHtml(card.back)}</div>
       ` : ''}
@@ -369,55 +354,33 @@ export class ReviewWebviewProvider {
         </button>
       </div>
     ` : `
-      ${simpleMode ? `
-        <div class="rating-buttons anki">
-          <button class="rating-1" onclick="rate(1)">
-            <div>Again</div>
-            <div style="font-size: 12px; margin-top: 5px;">&lt;1 min</div>
-          </button>
-          <button class="rating-2" onclick="rate(2)">
-            <div>Hard</div>
-            <div style="font-size: 12px; margin-top: 5px;">&lt;10 min</div>
-          </button>
-          <button class="rating-3" onclick="rate(3)">
-            <div>Good</div>
-            <div style="font-size: 12px; margin-top: 5px;">1 day</div>
-          </button>
-          <button class="rating-4" onclick="rate(4)">
-            <div>Easy</div>
-            <div style="font-size: 12px; margin-top: 5px;">4 days</div>
-          </button>
-        </div>
-        <div style="text-align: center; margin-top: 10px; font-size: 12px; color: var(--vscode-descriptionForeground);">
-          Keyboard: 1 (Again) | 2 (Hard) | 3 (Good) | 4 (Easy)
-        </div>
-      ` : `
-        <div class="rating-buttons">
-          <button class="rating-0" onclick="rate(0)">0 - Forgot ❌</button>
-          <button class="rating-1" onclick="rate(1)">1 - Again 🔄</button>
-          <button class="rating-2" onclick="rate(2)">2 - Hard 😓</button>
-          <button class="rating-3" onclick="rate(3)">3 - OK 👍</button>
-          <button class="rating-4" onclick="rate(4)">4 - Good ✅</button>
-          <button class="rating-5" onclick="rate(5)">5 - Perfect ✨</button>
-        </div>
-      `}
+      <div class="rating-buttons anki">
+        <button class="rating-1" onclick="rate(1)">
+          <div>Again</div>
+          <div style="font-size: 12px; margin-top: 5px;">&lt;1 min</div>
+        </button>
+        <button class="rating-2" onclick="rate(2)">
+          <div>Hard</div>
+          <div style="font-size: 12px; margin-top: 5px;">&lt;10 min</div>
+        </button>
+        <button class="rating-3" onclick="rate(3)">
+          <div>Good</div>
+          <div style="font-size: 12px; margin-top: 5px;">1 day</div>
+        </button>
+        <button class="rating-4" onclick="rate(4)">
+          <div>Easy</div>
+          <div style="font-size: 12px; margin-top: 5px;">4 days</div>
+        </button>
+      </div>
+      <div style="text-align: center; margin-top: 10px; font-size: 12px; color: var(--vscode-descriptionForeground);">
+        Keyboard: 1 (Again) | 2 (Hard) | 3 (Good) | 4 (Easy)
+      </div>
     `}
   </div>
 
   <script>
     const vscode = acquireVsCodeApi();
     const showingAnswer = ${showingAnswer};
-
-    ${spellMode && !showingAnswer ? `
-      const input = document.getElementById('answer-input');
-      if (input) {
-        input.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') {
-            showAnswer();
-          }
-        });
-      }
-    ` : ''}
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
@@ -427,18 +390,11 @@ export class ReviewWebviewProvider {
           showAnswer();
         }
       } else {
-        // Rating shortcuts
-        if (e.key >= '0' && e.key <= '5') {
-          const quality = parseInt(e.key);
-          rate(quality);
-        }
-        // Anki mode shortcuts
-        ${simpleMode ? `
-          if (e.key === '1') rate(1); // Again
-          if (e.key === '2') rate(2); // Hard
-          if (e.key === '3') rate(3); // Good
-          if (e.key === '4') rate(4); // Easy
-        ` : ''}
+        // Anki mode shortcuts (1-4)
+        if (e.key === '1') rate(1); // Again
+        if (e.key === '2') rate(2); // Hard
+        if (e.key === '3') rate(3); // Good
+        if (e.key === '4') rate(4); // Easy
       }
     });
 
