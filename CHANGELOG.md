@@ -72,10 +72,7 @@ All notable changes to the Kioku extension will be documented in this file.
 ## [Unreleased]
 
 ### Planned Features
-- GitHub OAuth integration for cloud sync
 - Gist-based backup and sync
 - Media support (images, audio)
 - AI-powered card generation
 - Gamification (XP, levels, badges)
-- Import from Anki format
-- Mobile companion app
