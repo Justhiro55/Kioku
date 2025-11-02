@@ -1,0 +1,52 @@
+[
+  {
+    "front": "apple",
+    "back": "りんご",
+    "tags": ["fruit", "vocabulary"]
+  },
+  {
+    "front": "banana",
+    "back": "バナナ",
+    "tags": ["fruit", "vocabulary"]
+  },
+  {
+    "front": "cat",
+    "back": "猫",
+    "tags": ["animal", "vocabulary"]
+  },
+  {
+    "front": "dog",
+    "back": "犬",
+    "tags": ["animal", "vocabulary"]
+  },
+  {
+    "front": "hello",
+    "back": "こんにちは",
+    "tags": ["greeting", "phrase"]
+  },
+  {
+    "front": "thank you",
+    "back": "ありがとう",
+    "tags": ["greeting", "phrase"]
+  },
+  {
+    "front": "good morning",
+    "back": "おはよう",
+    "tags": ["greeting", "phrase"]
+  },
+  {
+    "front": "water",
+    "back": "水",
+    "tags": ["drink", "vocabulary"]
+  },
+  {
+    "front": "coffee",
+    "back": "コーヒー",
+    "tags": ["drink", "vocabulary"]
+  },
+  {
+    "front": "book",
+    "back": "本",
+    "tags": ["object", "vocabulary"]
+  }
+]

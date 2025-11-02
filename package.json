@@ -78,6 +78,18 @@
         "title": "Kioku: Import from CSV"
       },
       {
+        "command": "kioku.importJSON",
+        "title": "Kioku: Import from JSON"
+      },
+      {
+        "command": "kioku.exportJSON",
+        "title": "Kioku: Export to JSON"
+      },
+      {
+        "command": "kioku.createFromJSON",
+        "title": "Kioku: Create Cards from Current JSON File"
+      },
+      {
         "command": "kioku.searchCards",
         "title": "Kioku: Search Cards"
       },
@@ -149,10 +161,15 @@
           "default": true,
           "description": "Use webview UI for reviews (recommended)"
         },
-        "kioku.spellMode": {
+        "kioku.simpleMode": {
           "type": "boolean",
           "default": true,
-          "description": "Enable spell input mode for reviews"
+          "description": "Use Anki-style 4-button mode (Again/Hard/Good/Easy)"
+        },
+        "kioku.spellMode": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable spell input mode for reviews (disables simple mode)"
         },
         "kioku.reviewAlgorithm": {
           "type": "string",

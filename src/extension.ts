@@ -4,6 +4,7 @@ import { DeckTreeProvider } from './deckTreeProvider';
 import { ReviewWebviewProvider } from './reviewWebview';
 import { StatsWebviewProvider } from './statsWebview';
 import { exportCardsToCSV, importCardsFromCSV } from './csvHandler';
+import { importFromJSON, createFromJSONFile, exportToJSON } from './jsonHandler';
 import { FilterManager } from './filterManager';
 import { StatisticsManager } from './statistics';
 import { migrateToSQLite } from './migration';
@@ -56,6 +57,17 @@ export function activate(ctx: vscode.ExtensionContext) {
     vscode.commands.registerCommand('kioku.exportCSV', () => exportCardsToCSV(storage)),
     vscode.commands.registerCommand('kioku.importCSV', async () => {
       await importCardsFromCSV(storage);
+      deckTreeProvider.refresh();
+      updateStatusBar();
+    }),
+    vscode.commands.registerCommand('kioku.importJSON', async () => {
+      await importFromJSON(storage);
+      deckTreeProvider.refresh();
+      updateStatusBar();
+    }),
+    vscode.commands.registerCommand('kioku.exportJSON', () => exportToJSON(storage)),
+    vscode.commands.registerCommand('kioku.createFromJSON', async () => {
+      await createFromJSONFile(storage);
       deckTreeProvider.refresh();
       updateStatusBar();
     }),
