@@ -26,8 +26,58 @@
       {
         "command": "kioku.openDeck",
         "title": "Kioku: Open Deck"
+      },
+      {
+        "command": "kioku.editCard",
+        "title": "Kioku: Edit Card"
+      },
+      {
+        "command": "kioku.deleteCard",
+        "title": "Kioku: Delete Card"
+      },
+      {
+        "command": "kioku.createDeck",
+        "title": "Kioku: Create Deck"
+      },
+      {
+        "command": "kioku.deleteDeck",
+        "title": "Kioku: Delete Deck"
+      },
+      {
+        "command": "kioku.exportCSV",
+        "title": "Kioku: Export to CSV"
+      },
+      {
+        "command": "kioku.importCSV",
+        "title": "Kioku: Import from CSV"
       }
     ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "kioku.editCard",
+          "when": "view == kioku-decks && viewItem == card",
+          "group": "inline"
+        },
+        {
+          "command": "kioku.deleteCard",
+          "when": "view == kioku-decks && viewItem == card",
+          "group": "inline"
+        },
+        {
+          "command": "kioku.deleteDeck",
+          "when": "view == kioku-decks && viewItem == deck",
+          "group": "inline"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "kioku.createDeck",
+          "when": "view == kioku-decks",
+          "group": "navigation"
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -48,6 +98,11 @@
     "configuration": {
       "title": "Kioku",
       "properties": {
+        "kioku.useWebview": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use webview UI for reviews (recommended)"
+        },
         "kioku.spellMode": {
           "type": "boolean",
           "default": true,
