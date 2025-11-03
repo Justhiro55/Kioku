@@ -31,22 +31,20 @@ Kioku (記憶 - "memory" in Japanese) is a flashcard learning extension that int
 
 ## ✨ Features
 
-### 🏠 Beautiful Home Screen
-- Modern, intuitive interface with gradient design
+### 🏠 Home Screen
 - GitHub-style contribution calendar showing your learning progress
-- Quick access to all your decks with visual card counts
+- Quick access to all your decks with card counts
 - One-click deck creation and import
 
 <div align="center">
 <img src="resources/home_screen.png" alt="Home Screen" width="600" />
 </div>
 
-### 🎯 Smart Learning
-- **🧠 Spaced Repetition (SM-2)**: Scientifically proven algorithm for optimal retention
-- **⌨️ Keyboard-First**: Navigate everything with keyboard shortcuts
-- **🎨 Modern Review UI**: Beautiful, distraction-free review experience
-- **↩️ Undo System**: Made a mistake? Press `Cmd+Z` to undo your last rating
-- **📊 Completion Screen**: Celebrate your progress with detailed statistics after each session
+### 🎯 Spaced Repetition Learning
+- **SM-2 Algorithm**: Automatically schedules reviews based on your performance
+- **Keyboard Navigation**: Navigate everything with keyboard shortcuts
+- **Undo System**: Press `Cmd+Z` to undo your last rating
+- **Progress Tracking**: View statistics after each session
 
 <div align="center">
 <img src="resources/review_screen.png" alt="Review Screen" width="600" />
