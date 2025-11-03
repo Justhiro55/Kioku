@@ -18,11 +18,16 @@
 
 ---
 
-## 🌟 Why Kioku?
+## 🌟 Overview
 
-Kioku (記憶 - Japanese for "memory") brings powerful flashcard learning directly into your VSCode workflow. Whether you're learning a new programming language, preparing for technical interviews, or studying TOEIC vocabulary, Kioku helps you remember what matters.
+Kioku (記憶 - "memory" in Japanese) is a flashcard learning extension that integrates spaced repetition directly into VSCode. Learn programming languages, prepare for interviews, study foreign languages—all without leaving your editor.
 
-**Perfect for developers who want to learn without leaving their editor.**
+**Features:**
+- 🧠 Spaced Repetition (SM-2 algorithm) for optimal retention
+- 📝 Markdown-based card creation (perfect for developers)
+- ⌨️ Keyboard-first navigation
+- 📊 GitHub-style progress tracking
+- 🎯 3 ready-to-use template decks included
 
 ## ✨ Features
 
@@ -84,19 +89,19 @@ npm run compile
 # Press F5 in VSCode to launch
 ```
 
-## 📖 Quick Start
+## 🚀 Quick Start
 
-### 1. Open Kioku Home
-Click the **🧠 Kioku** icon in the Activity Bar, then click **Home** button.
+1. **Open Kioku**: Click the **🧠** icon in the Activity Bar, then click **Home**
+2. **Import a Template**: Click **📥 Import Deck from Markdown** and select:
+   - `templates/toeic/golden-word.md` - TOEIC vocabulary (100 words)
+   - `templates/kihon-joho/basic-terms.md` - IT terminology (100 terms)
+   - `templates/japanese-learning/jlpt-n5-vocabulary.md` - Japanese basics (150 words)
+3. **Start Learning**: Click **▶ Start Review** and begin!
 
-### 2. Import a Template Deck
-Click **"📥 Import Deck from Markdown"** and select a template:
-- `templates/toeic/golden-word.md` - TOEIC 600 level vocabulary (100 words)
-- `templates/kihon-joho/basic-terms.md` - 基本情報技術者試験 terms (100 terms)
-- `templates/japanese-learning/jlpt-n5-vocabulary.md` - Basic Japanese (150 words)
-
-### 3. Start Learning
-Click **"▶ Start Review"** on any deck and begin your learning journey!
+**Or create your own deck:**
+- Press `Cmd+Shift+P` → `Kioku: Import from Markdown`
+- Use AI (ChatGPT/Claude) to generate custom decks in Markdown format
+- See [templates/README.md](templates/README.md) for the format
 
 ## 💡 Usage
 
@@ -172,20 +177,23 @@ Concise function syntax: (x) => x * 2
 - `Cmd+Delete` anywhere to return home
 - `Cmd+Enter` to save new cards
 
-## 🎨 Templates
+## 🎨 Templates & Custom Decks
 
-Kioku includes **3 ready-to-use template decks** to get you started:
+Kioku includes **3 ready-to-use template decks**:
 
-- 🇬🇧 **TOEIC Golden Words** - 100 business vocabulary words (600 level)
-- 💻 **基本情報技術者試験** - 100 key IT terms for FE exam
+- 🇬🇧 **TOEIC Golden Words** - 100 business vocabulary (600 level)
+- 💻 **基本情報技術者試験** - 100 IT terms for FE exam
 - 🇯🇵 **JLPT N5 Vocabulary** - 150 basic Japanese words
 
-**Quick Import:**
-1. Click **Home** → **📥 Import Deck from Markdown**
-2. Navigate to `templates/` folder
-3. Select a template and start learning!
+**Create Custom Decks with AI:**
+Use ChatGPT or Claude to generate custom learning decks for any topic:
+```
+Prompt: "Create a flashcard deck in Markdown for React Hooks.
+Use H2 headings (##) for card fronts and paragraphs for backs.
+Create 50 cards."
+```
 
-**📖 [View detailed template documentation →](templates/README.md)**
+**📖 [Full template documentation & examples →](templates/README.md)**
 
 ## ⚙️ Settings
 
@@ -219,17 +227,17 @@ Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and type:
 ### Analytics
 - `Kioku: Show Statistics` - View detailed learning statistics
 
-## 🔬 Technology
+## 🔬 How It Works
 
-**Spaced Repetition Algorithm (SM-2):**
-Kioku uses the SuperMemo 2 algorithm, which automatically schedules card reviews based on your performance:
-- Cards you know well appear less frequently
-- Difficult cards appear more often
-- Optimal spacing for long-term retention
+**Spaced Repetition (SM-2 Algorithm):**
+Kioku automatically schedules reviews based on your performance:
+- Know a card well? See it less frequently
+- Struggling with a card? See it more often
+- Scientifically proven for optimal long-term retention
 
-**Storage Options:**
-- **GlobalState** (default): Lightweight, built into VSCode
-- **SQLite**: For large decks with advanced querying
+**Storage:**
+- **GlobalState** (default) - Lightweight, built into VSCode
+- **SQLite** - For large decks (switch in settings)
 
 ## 🤝 Contributing
 
