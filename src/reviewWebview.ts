@@ -208,7 +208,7 @@ export class ReviewWebviewProvider {
       font-family: var(--vscode-font-family);
       color: var(--vscode-foreground);
       background: var(--vscode-editor-background);
-      padding: 20px;
+      padding: 30px 20px;
       display: flex;
       flex-direction: column;
       height: 100vh;
@@ -216,25 +216,40 @@ export class ReviewWebviewProvider {
 
     .progress {
       text-align: center;
-      font-size: 14px;
-      color: var(--vscode-descriptionForeground);
-      margin-bottom: 20px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--vscode-foreground);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .progress-number {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 18px;
     }
 
     .progress-bar {
       width: 100%;
-      height: 4px;
+      height: 6px;
       background: var(--vscode-input-background);
-      border-radius: 2px;
-      margin-bottom: 30px;
+      border-radius: 10px;
+      margin-bottom: 40px;
       overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .progress-fill {
       height: 100%;
-      background: var(--vscode-button-background);
+      background: linear-gradient(90deg, #667eea, #764ba2);
       width: ${(progress / total) * 100}%;
-      transition: width 0.3s ease;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
     }
 
     .card-container {
@@ -243,30 +258,45 @@ export class ReviewWebviewProvider {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      max-width: 600px;
+      max-width: 700px;
       margin: 0 auto;
       width: 100%;
     }
 
     .card {
       background: var(--vscode-input-background);
-      border: 1px solid var(--vscode-input-border);
-      border-radius: 8px;
-      padding: 40px;
+      border: 2px solid var(--vscode-input-border);
+      border-radius: 16px;
+      padding: 50px;
       text-align: center;
       width: 100%;
-      min-height: 200px;
+      min-height: 300px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
     }
 
     .front {
-      font-size: 32px;
-      font-weight: bold;
+      font-size: 36px;
+      font-weight: 600;
       margin-bottom: 20px;
+      line-height: 1.4;
     }
 
     .input-container {
@@ -290,11 +320,12 @@ export class ReviewWebviewProvider {
     }
 
     .answer {
-      font-size: 24px;
+      font-size: 28px;
       color: var(--vscode-textLink-foreground);
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid var(--vscode-input-border);
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 2px dashed var(--vscode-input-border);
+      line-height: 1.5;
     }
 
     .buttons {
@@ -305,70 +336,93 @@ export class ReviewWebviewProvider {
     }
 
     button {
-      padding: 12px 24px;
+      padding: 16px 32px;
       font-size: 16px;
+      font-weight: 600;
       border: none;
-      border-radius: 4px;
+      border-radius: 10px;
       cursor: pointer;
-      background: var(--vscode-button-background);
-      color: var(--vscode-button-foreground);
-      transition: all 0.2s;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
 
     button:hover {
-      background: var(--vscode-button-hoverBackground);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
     }
 
     button.secondary {
       background: var(--vscode-button-secondaryBackground);
       color: var(--vscode-button-secondaryForeground);
+      box-shadow: none;
     }
 
     button.secondary:hover {
       background: var(--vscode-button-secondaryHoverBackground);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .rating-buttons {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
       width: 100%;
-      max-width: 500px;
+      max-width: 700px;
       margin-top: 20px;
     }
 
-    .rating-buttons.simple {
-      grid-template-columns: repeat(2, 1fr);
-      max-width: 400px;
-    }
-
-    .rating-buttons.anki {
-      grid-template-columns: repeat(4, 1fr);
-      max-width: 600px;
-    }
-
     .rating-buttons button {
-      padding: 16px;
-      font-size: 14px;
+      padding: 20px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      transition: all 0.2s;
     }
 
-    .rating-buttons.simple button {
-      padding: 20px;
+    .rating-buttons button:hover {
+      transform: translateY(-4px) scale(1.05);
+    }
+
+    .rating-label {
       font-size: 16px;
+      font-weight: 700;
     }
 
-    .rating-buttons.anki button {
-      padding: 18px 12px;
-      font-size: 14px;
+    .rating-time {
+      font-size: 12px;
+      opacity: 0.9;
     }
 
-    .rating-0 { background: #dc3545; }
-    .rating-1 { background: #fd7e14; }
-    .rating-2 { background: #ffc107; color: #000; }
-    .rating-3 { background: #28a745; }
-    .rating-4 { background: #20c997; }
-    .rating-5 { background: #17a2b8; }
+    .rating-1 {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+    .rating-1:hover { box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5); }
+
+    .rating-2 {
+      background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+      color: #000;
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+    }
+    .rating-2:hover { box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5); }
+
+    .rating-3 {
+      background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+    .rating-3:hover { box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5); }
+
+    .rating-4 {
+      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+      box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+    }
+    .rating-4:hover { box-shadow: 0 6px 20px rgba(23, 162, 184, 0.5); }
 
     .hint {
       font-size: 14px;
@@ -378,7 +432,12 @@ export class ReviewWebviewProvider {
   </style>
 </head>
 <body>
-  <div class="progress">Card ${progress} of ${total}</div>
+  <div class="progress">
+    <span>Card</span>
+    <span class="progress-number">${progress}</span>
+    <span>of</span>
+    <span class="progress-number">${total}</span>
+  </div>
   <div class="progress-bar">
     <div class="progress-fill"></div>
   </div>
@@ -399,26 +458,30 @@ export class ReviewWebviewProvider {
         </button>
       </div>
     ` : `
-      <div class="rating-buttons anki">
+      <div class="rating-buttons">
         <button class="rating-1" onclick="rate(1)">
-          <div>Again</div>
-          <div style="font-size: 12px; margin-top: 5px;">&lt;1 min</div>
+          <div class="rating-label">Again</div>
+          <div class="rating-time">&lt;1 min</div>
         </button>
         <button class="rating-2" onclick="rate(2)">
-          <div>Hard</div>
-          <div style="font-size: 12px; margin-top: 5px;">&lt;10 min</div>
+          <div class="rating-label">Hard</div>
+          <div class="rating-time">&lt;10 min</div>
         </button>
         <button class="rating-3" onclick="rate(3)">
-          <div>Good</div>
-          <div style="font-size: 12px; margin-top: 5px;">1 day</div>
+          <div class="rating-label">Good</div>
+          <div class="rating-time">1 day</div>
         </button>
         <button class="rating-4" onclick="rate(4)">
-          <div>Easy</div>
-          <div style="font-size: 12px; margin-top: 5px;">4 days</div>
+          <div class="rating-label">Easy</div>
+          <div class="rating-time">4 days</div>
         </button>
       </div>
-      <div style="text-align: center; margin-top: 10px; font-size: 12px; color: var(--vscode-descriptionForeground);">
-        Keyboard: 1 (Again) | 2 (Hard) | 3 (Good) | 4 (Easy)
+      <div style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--vscode-descriptionForeground); opacity: 0.8;">
+        <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">1</kbd>
+        <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">2</kbd>
+        <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">3</kbd>
+        <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">4</kbd>
+        or <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">⌘Z</kbd> to undo
       </div>
     `}
   </div>

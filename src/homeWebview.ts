@@ -961,142 +961,215 @@ export class HomeWebviewProvider {
       font-family: var(--vscode-font-family);
       color: var(--vscode-foreground);
       background: var(--vscode-editor-background);
-      padding: 30px;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
     .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
+      text-align: center;
+      margin-bottom: 40px;
     }
 
     .title-section h1 {
-      font-size: 32px;
-      margin-bottom: 5px;
+      font-size: 36px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .subtitle {
       color: var(--vscode-descriptionForeground);
-      font-size: 14px;
-    }
-
-    .back-btn {
-      padding: 10px 20px;
-      background: var(--vscode-button-secondaryBackground);
-      color: var(--vscode-button-secondaryForeground);
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    .back-btn:hover {
-      background: var(--vscode-button-secondaryHoverBackground);
+      font-size: 16px;
     }
 
     .form-container {
-      max-width: 600px;
+      max-width: 700px;
       margin: 0 auto;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-preview {
+      background: var(--vscode-input-background);
+      border: 2px solid var(--vscode-input-border);
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 30px;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .form-group {
-      margin-bottom: 25px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.front {
+      border-bottom: 2px dashed var(--vscode-input-border);
+      padding-bottom: 30px;
     }
 
     label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 10px;
-      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--vscode-descriptionForeground);
+    }
+
+    .label-icon {
+      font-size: 18px;
     }
 
     textarea {
       width: 100%;
-      min-height: 120px;
-      padding: 15px;
-      background: var(--vscode-input-background);
-      color: var(--vscode-input-foreground);
-      border: 2px solid var(--vscode-input-border);
-      border-radius: 6px;
+      min-height: 100px;
+      padding: 0;
+      background: transparent;
+      color: var(--vscode-foreground);
+      border: none;
       font-family: var(--vscode-font-family);
-      font-size: 16px;
-      resize: vertical;
+      font-size: 20px;
+      resize: none;
+      flex: 1;
     }
 
     textarea:focus {
       outline: none;
-      border-color: var(--vscode-focusBorder);
+    }
+
+    textarea::placeholder {
+      color: var(--vscode-descriptionForeground);
+      opacity: 0.5;
+    }
+
+    .form-hint {
+      font-size: 12px;
+      color: var(--vscode-descriptionForeground);
+      margin-top: 8px;
+      opacity: 0.7;
     }
 
     .button-group {
       display: flex;
-      gap: 10px;
+      gap: 12px;
+      margin-top: 20px;
     }
 
     .save-btn {
       flex: 1;
-      padding: 15px;
-      background: var(--vscode-button-background);
-      color: var(--vscode-button-foreground);
+      padding: 18px;
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 16px;
-      font-weight: bold;
-      transition: all 0.2s;
+      font-weight: 600;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    .save-btn:hover {
-      background: var(--vscode-button-hoverBackground);
-      transform: translateY(-2px);
+    .save-btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
     }
 
     .save-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
     }
 
     .cancel-btn {
-      padding: 15px 30px;
+      padding: 18px 32px;
       background: var(--vscode-button-secondaryBackground);
       color: var(--vscode-button-secondaryForeground);
       border: none;
-      border-radius: 6px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 16px;
+      font-weight: 500;
       transition: all 0.2s;
     }
 
     .cancel-btn:hover {
       background: var(--vscode-button-secondaryHoverBackground);
+      transform: translateY(-2px);
+    }
+
+    .shortcut-hint {
+      text-align: center;
+      font-size: 13px;
+      color: var(--vscode-descriptionForeground);
+      margin-top: 16px;
+      opacity: 0.7;
+    }
+
+    .shortcut-hint kbd {
+      background: var(--vscode-input-background);
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--vscode-input-border);
+      font-family: monospace;
+      font-size: 12px;
     }
   </style>
 </head>
 <body>
   <div class="header">
     <div class="title-section">
-      <h1>➕ Add New Card</h1>
-      <p class="subtitle">to ${this.escapeHtml(deck.name)}</p>
+      <h1>✨ Create New Card</h1>
+      <p class="subtitle">${this.escapeHtml(deck.name)}</p>
     </div>
-    <button class="back-btn" onclick="closeModal()">← Back to Home</button>
   </div>
 
   <div class="form-container">
-    <div class="form-group">
-      <label for="front">Front (Question)</label>
-      <textarea id="front" placeholder="Enter the question or term..."></textarea>
-    </div>
+    <div class="card-preview">
+      <div class="form-group front">
+        <label>
+          <span class="label-icon">❓</span>
+          Front (Question)
+        </label>
+        <textarea id="front" placeholder="What do you want to remember?"></textarea>
+      </div>
 
-    <div class="form-group">
-      <label for="back">Back (Answer)</label>
-      <textarea id="back" placeholder="Enter the answer or definition..."></textarea>
+      <div class="form-group">
+        <label>
+          <span class="label-icon">💡</span>
+          Back (Answer)
+        </label>
+        <textarea id="back" placeholder="The answer or explanation..."></textarea>
+      </div>
     </div>
 
     <div class="button-group">
-      <button class="save-btn" onclick="saveCard()" id="saveBtn" disabled>💾 Save Card</button>
       <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+      <button class="save-btn" onclick="saveCard()" id="saveBtn" disabled>
+        <span>✓</span> Save Card
+      </button>
+    </div>
+
+    <div class="shortcut-hint">
+      Press <kbd>⌘</kbd> + <kbd>Enter</kbd> to save
     </div>
   </div>
 
@@ -1113,6 +1186,15 @@ export class HomeWebviewProvider {
 
     frontInput.addEventListener('input', validateInputs);
     backInput.addEventListener('input', validateInputs);
+
+    // Auto-resize textareas
+    function autoResize(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    frontInput.addEventListener('input', () => autoResize(frontInput));
+    backInput.addEventListener('input', () => autoResize(backInput));
 
     // Focus first input
     frontInput.focus();
