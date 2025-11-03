@@ -336,12 +336,43 @@ export class HomeWebviewProvider {
       transform: translateY(-2px);
     }
 
+    .calendar-container {
+      margin-top: 20px;
+    }
+
+    .calendar-months {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 5px;
+      font-size: 11px;
+      color: var(--vscode-descriptionForeground);
+      padding-left: 20px;
+    }
+
+    .calendar-month {
+      min-width: 50px;
+    }
+
+    .calendar-body {
+      display: flex;
+      gap: 3px;
+    }
+
+    .calendar-days {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 10px;
+      color: var(--vscode-descriptionForeground);
+      justify-content: space-around;
+      padding-right: 5px;
+    }
+
     .calendar {
       display: grid;
       grid-template-columns: repeat(13, 1fr);
       gap: 3px;
-      max-width: 100%;
-      margin-top: 15px;
+      flex: 1;
     }
 
     .week {
@@ -351,12 +382,29 @@ export class HomeWebviewProvider {
     }
 
     .day {
-      width: 12px;
-      height: 12px;
+      width: 13px;
+      height: 13px;
       border-radius: 2px;
       background: var(--vscode-input-background);
       border: 1px solid var(--vscode-input-border);
       cursor: pointer;
+      position: relative;
+    }
+
+    .day:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      background: var(--vscode-input-background);
+      border: 1px solid var(--vscode-input-border);
+      border-radius: 4px;
+      white-space: nowrap;
+      font-size: 11px;
+      z-index: 10;
+      margin-bottom: 5px;
     }
 
     .day[data-level="1"] {
@@ -447,8 +495,20 @@ export class HomeWebviewProvider {
         <h2 class="stats-title">📊 Your Progress</h2>
         <button class="stats-button" onclick="showStats()">View Details</button>
       </div>
-      <div class="calendar">
-        ${this.generateCalendar(recentStats)}
+      <div class="calendar-container">
+        <div class="calendar-months">
+          ${this.generateMonthLabels(recentStats)}
+        </div>
+        <div class="calendar-body">
+          <div class="calendar-days">
+            <span>Mon</span>
+            <span>Wed</span>
+            <span>Fri</span>
+          </div>
+          <div class="calendar">
+            ${this.generateCalendar(recentStats)}
+          </div>
+        </div>
       </div>
       <div class="calendar-legend">
         <span>Less</span>
@@ -487,6 +547,38 @@ export class HomeWebviewProvider {
 </html>`;
   }
 
+  private generateMonthLabels(recentStats: { date: string; reviews: number }[]): string {
+    const months: { month: string; weekIndex: number }[] = [];
+    let lastMonth = '';
+
+    // Group into weeks first
+    const weeks: { date: string; reviews: number }[][] = [];
+    let currentWeek: { date: string; reviews: number }[] = [];
+
+    recentStats.forEach((stat, index) => {
+      currentWeek.push(stat);
+      if (currentWeek.length === 7 || index === recentStats.length - 1) {
+        weeks.push([...currentWeek]);
+        currentWeek = [];
+      }
+    });
+
+    // Find month boundaries
+    weeks.forEach((week, weekIndex) => {
+      const firstDay = new Date(week[0].date);
+      const monthName = firstDay.toLocaleDateString('en-US', { month: 'short' });
+
+      if (monthName !== lastMonth) {
+        months.push({ month: monthName, weekIndex });
+        lastMonth = monthName;
+      }
+    });
+
+    return months.map(m =>
+      `<div class="calendar-month" style="margin-left: ${m.weekIndex * 16}px;">${m.month}</div>`
+    ).join('');
+  }
+
   private generateCalendar(recentStats: { date: string; reviews: number }[]): string {
     // Group days into weeks
     const weeks: { date: string; reviews: number }[][] = [];
@@ -507,7 +599,11 @@ export class HomeWebviewProvider {
     return weeks.map(week => {
       const days = week.map(day => {
         const level = this.getReviewLevel(day.reviews, maxReviews);
-        return `<div class="day" data-level="${level}" data-reviews="${day.reviews}"></div>`;
+        const date = new Date(day.date);
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const tooltip = `${dateStr}: ${day.reviews} reviews`;
+
+        return `<div class="day" data-level="${level}" data-reviews="${day.reviews}" data-tooltip="${tooltip}"></div>`;
       }).join('');
 
       return `<div class="week">${days}</div>`;

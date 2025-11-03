@@ -43,7 +43,7 @@
     "commands": [
       {
         "command": "kioku.showHome",
-        "title": "Kioku: Show Home",
+        "title": "Home",
         "icon": "$(home)"
       },
       {
@@ -68,7 +68,8 @@
       },
       {
         "command": "kioku.createDeck",
-        "title": "Kioku: Create Deck"
+        "title": "New Deck",
+        "icon": "$(add)"
       },
       {
         "command": "kioku.deleteDeck",
