@@ -60,7 +60,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
 
     - name: Install dependencies
@@ -69,7 +69,7 @@ jobs:
     - name: Build and Package
       run: |
         npm run compile
-        npx vsce package
+        npx @vscode/vsce package
 
     - name: Check VSIX size
       run: |
