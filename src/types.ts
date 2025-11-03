@@ -12,6 +12,7 @@ export interface Card {
   reps: number;      // Number of repetitions
   ease: number;      // Ease factor for SM-2 algorithm
   deckId: string;
+  image?: string;    // Optional base64 image data
 }
 
 /**

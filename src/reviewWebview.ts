@@ -17,13 +17,20 @@ export class ReviewWebviewProvider {
   constructor(
     private context: vscode.ExtensionContext,
     private storage: StorageManager,
-    private onComplete: () => void
+    private onComplete: () => void,
+    private deckId?: string
   ) {
     this.statisticsManager = new StatisticsManager(context);
   }
 
   async show() {
-    const allCards = await this.storage.getCards();
+    let allCards = await this.storage.getCards();
+
+    // Filter by deck if specified
+    if (this.deckId) {
+      allCards = await this.storage.getCardsByDeck(this.deckId);
+    }
+
     this.cards = SM2Algorithm.getDueCards(allCards);
 
     if (this.cards.length === 0) {

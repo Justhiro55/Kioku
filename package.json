@@ -128,10 +128,19 @@
       {
         "command": "kioku.migrateToSQLite",
         "title": "Kioku: Migrate to SQLite"
+      },
+      {
+        "command": "kioku.reviewDeck",
+        "title": "Kioku: Review This Deck"
       }
     ],
     "menus": {
       "view/item/context": [
+        {
+          "command": "kioku.reviewDeck",
+          "when": "view == kioku-decks && viewItem == deck",
+          "group": "navigation"
+        },
         {
           "command": "kioku.editCard",
           "when": "view == kioku-decks && viewItem == card",

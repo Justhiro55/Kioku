@@ -105,6 +105,7 @@ export function activate(ctx: vscode.ExtensionContext) {
       }
     }),
     vscode.commands.registerCommand('kioku.shareDeck', () => GistHandler.shareDeckAsMarkdown(storage)),
+    vscode.commands.registerCommand('kioku.reviewDeck', reviewDeck),
     vscode.commands.registerCommand('kioku.searchCards', searchCards),
     vscode.commands.registerCommand('kioku.filterByTag', filterByTag),
     vscode.commands.registerCommand('kioku.clearFilters', clearFilters),
@@ -200,11 +201,69 @@ async function addFromSelection() {
 }
 
 /**
- * Start review session
+ * Start review session with deck selection
  */
-async function startReview() {
+async function startReview(deckId?: string) {
   const config = vscode.workspace.getConfiguration('kioku');
   const useWebview = config.get<boolean>('useWebview', true);
+
+  // If no deck specified, show deck picker
+  if (!deckId) {
+    const allCards = await storage.getCards();
+    const decks = await storage.getDecks();
+
+    // Calculate due cards per deck
+    interface DeckQuickPickItem extends vscode.QuickPickItem {
+      deckId: string | null;
+    }
+
+    const deckItems: DeckQuickPickItem[] = [];
+
+    // Add "All Decks" option
+    const allDueCards = SM2Algorithm.getDueCards(allCards);
+    if (allDueCards.length > 0) {
+      deckItems.push({
+        label: '📚 All Decks',
+        description: `${allDueCards.length} cards due`,
+        deckId: null
+      });
+    }
+
+    // Add individual decks
+    for (const deck of decks) {
+      const deckCards = await storage.getCardsByDeck(deck.id);
+      const dueDeckCards = SM2Algorithm.getDueCards(deckCards);
+
+      if (dueDeckCards.length > 0) {
+        deckItems.push({
+          label: `📁 ${deck.name}`,
+          description: `${dueDeckCards.length} cards due`,
+          deckId: deck.id
+        });
+      } else {
+        deckItems.push({
+          label: `✓ ${deck.name}`,
+          description: 'All done!',
+          deckId: deck.id
+        });
+      }
+    }
+
+    if (deckItems.length === 0) {
+      vscode.window.showInformationMessage('No cards due for review! 🎉');
+      return;
+    }
+
+    const selected = await vscode.window.showQuickPick(deckItems, {
+      placeHolder: 'Select deck to review'
+    });
+
+    if (!selected) {
+      return;
+    }
+
+    deckId = selected.deckId || undefined;
+  }
 
   if (useWebview) {
     const webviewProvider = new ReviewWebviewProvider(
@@ -213,20 +272,27 @@ async function startReview() {
       () => {
         deckTreeProvider.refresh();
         updateStatusBar();
-      }
+      },
+      deckId
     );
     await webviewProvider.show();
   } else {
     // Fallback to input box mode
-    await startReviewInputMode();
+    await startReviewInputMode(deckId);
   }
 }
 
 /**
  * Start review session with input boxes (legacy mode)
  */
-async function startReviewInputMode() {
-  const allCards = await storage.getCards();
+async function startReviewInputMode(deckId?: string) {
+  let allCards = await storage.getCards();
+
+  // Filter by deck if specified
+  if (deckId) {
+    allCards = await storage.getCardsByDeck(deckId);
+  }
+
   const dueCards = SM2Algorithm.getDueCards(allCards);
 
   if (dueCards.length === 0) {
@@ -655,6 +721,15 @@ async function filterByTag() {
 function clearFilters() {
   filterManager.clearFilters();
   vscode.window.showInformationMessage('Filters cleared');
+}
+
+/**
+ * Review specific deck
+ */
+async function reviewDeck(item: any) {
+  if (item && item.deck) {
+    await startReview(item.deck.id);
+  }
 }
 
 /**
