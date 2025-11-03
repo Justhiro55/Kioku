@@ -174,97 +174,18 @@ Concise function syntax: (x) => x * 2
 
 ## 🎨 Templates
 
-Kioku includes **3 ready-to-use template decks** in the `templates/` directory. Import them to start learning immediately!
+Kioku includes **3 ready-to-use template decks** to get you started:
 
-### 📥 How to Use Templates
+- 🇬🇧 **TOEIC Golden Words** - 100 business vocabulary words (600 level)
+- 💻 **基本情報技術者試験** - 100 key IT terms for FE exam
+- 🇯🇵 **JLPT N5 Vocabulary** - 150 basic Japanese words
 
-1. Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
-2. Run `Kioku: Import from Markdown`
-3. Navigate to the `templates/` folder
-4. Select one of the template files below
-5. Start reviewing!
+**Quick Import:**
+1. Click **Home** → **📥 Import Deck from Markdown**
+2. Navigate to `templates/` folder
+3. Select a template and start learning!
 
-**Or use the Home Screen:**
-- Click **Home** → **📥 Import Deck from Markdown** → Select template
-
----
-
-### 🇬🇧 TOEIC Golden Words (600 Level)
-**File:** `templates/toeic/golden-word.md`
-
-100 essential business vocabulary words for TOEIC preparation
-- **Categories**: Basic Business, Office, Finance, Customer Service
-- **Format**: English word → Japanese definition
-- **Level**: TOEIC 600 target score
-- **Example**:
-  - Front: `accomplish`
-  - Back: `達成する、成し遂げる`
-
-Perfect for Japanese speakers preparing for TOEIC!
-
----
-
-### 💻 基本情報技術者試験 (Fundamental IT Engineer Exam)
-**File:** `templates/kihon-joho/basic-terms.md`
-
-100 key technical terms for the Japanese IT Engineer certification
-- **Topics**:
-  - Computer Architecture (CPU, ALU, Cache)
-  - Networking (TCP/IP, OSI Model)
-  - Databases (SQL, Normalization)
-  - Security (Encryption, Authentication)
-  - Software Engineering
-- **Format**: Technical term → Japanese explanation
-- **Example**:
-  - Front: `CPU (Central Processing Unit)`
-  - Back: `中央処理装置。コンピュータの中心となる演算・制御を行う装置`
-
-Ideal for 基本情報技術者試験 preparation!
-
----
-
-### 🇯🇵 JLPT N5 Vocabulary
-**File:** `templates/japanese-learning/jlpt-n5-vocabulary.md`
-
-150 basic Japanese words for beginners
-- **Categories**:
-  - Greetings & Daily Expressions
-  - Numbers & Time
-  - Family & People
-  - Food & Drinks
-  - Places & Directions
-  - Common Adjectives & Verbs
-- **Format**: Japanese (romaji) → English translation
-- **Example**:
-  - Front: `おはよう (ohayou)`
-  - Back: `Good morning (casual)`
-
-Perfect for JLPT N5 exam preparation or Japanese beginners!
-
----
-
-### 🎯 Creating Your Own Template
-
-Want to create custom templates? Just follow the markdown format:
-
-```markdown
-# Your Deck Name
-
-## Category 1
-
-### Card Front 1
-Card back explanation
-
-### Card Front 2
-Card back explanation
-
-## Category 2
-
-### Card Front 3
-Card back explanation
-```
-
-Save as `.md` and import using any of the methods above!
+**📖 [View detailed template documentation →](templates/README.md)**
 
 ## ⚙️ Settings
 
