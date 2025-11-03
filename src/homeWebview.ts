@@ -1,15 +1,20 @@
 import * as vscode from 'vscode';
 import { StorageManager } from './storage';
 import { SM2Algorithm } from './sm2';
+import { StatisticsManager } from './statistics';
 
 export class HomeWebviewProvider {
   private panel: vscode.WebviewPanel | undefined;
+  private statisticsManager: StatisticsManager;
 
   constructor(
     private context: vscode.ExtensionContext,
     private storage: StorageManager,
-    private onStartReview: (deckId?: string) => void
-  ) {}
+    private onStartReview: (deckId?: string) => void,
+    private onShowStats?: () => void
+  ) {
+    this.statisticsManager = new StatisticsManager(context);
+  }
 
   async show() {
     this.panel = vscode.window.createWebviewPanel(
@@ -41,6 +46,10 @@ export class HomeWebviewProvider {
       if (this.panel) {
         this.panel.dispose();
       }
+    } else if (message.command === 'showStats') {
+      if (this.onShowStats) {
+        this.onShowStats();
+      }
     }
   }
 
@@ -67,10 +76,14 @@ export class HomeWebviewProvider {
     // Calculate total due cards
     const totalDue = SM2Algorithm.getDueCards(allCards).length;
 
-    this.panel.webview.html = this.getWebviewContent(deckStats, totalDue);
+    // Get calendar data
+    const recentStats = await this.statisticsManager.getRecentStats(90);
+    const stats = await this.statisticsManager.getStatistics(allCards.length);
+
+    this.panel.webview.html = this.getWebviewContent(deckStats, totalDue, recentStats, stats);
   }
 
-  private getWebviewContent(deckStats: any[], totalDue: number): string {
+  private getWebviewContent(deckStats: any[], totalDue: number, recentStats: any[], stats: any): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -285,6 +298,97 @@ export class HomeWebviewProvider {
       font-size: 14px;
       opacity: 0.8;
     }
+
+    .stats-section {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 30px;
+      background: var(--vscode-input-background);
+      border: 2px solid var(--vscode-input-border);
+      border-radius: 12px;
+    }
+
+    .stats-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .stats-title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .stats-button {
+      padding: 10px 20px;
+      background: var(--vscode-button-background);
+      color: var(--vscode-button-foreground);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .stats-button:hover {
+      background: var(--vscode-button-hoverBackground);
+      transform: translateY(-2px);
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(13, 1fr);
+      gap: 3px;
+      max-width: 100%;
+      margin-top: 15px;
+    }
+
+    .week {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .day {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      background: var(--vscode-input-background);
+      border: 1px solid var(--vscode-input-border);
+      cursor: pointer;
+    }
+
+    .day[data-level="1"] {
+      background: #0e4429;
+    }
+
+    .day[data-level="2"] {
+      background: #006d32;
+    }
+
+    .day[data-level="3"] {
+      background: #26a641;
+    }
+
+    .day[data-level="4"] {
+      background: #39d353;
+    }
+
+    .calendar-legend {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      font-size: 12px;
+      color: var(--vscode-descriptionForeground);
+    }
+
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
   </style>
 </head>
 <body>
@@ -337,6 +441,32 @@ export class HomeWebviewProvider {
     `}
   </div>
 
+  ${deckStats.length > 0 ? `
+    <div class="stats-section">
+      <div class="stats-header">
+        <h2 class="stats-title">📊 Your Progress</h2>
+        <button class="stats-button" onclick="showStats()">View Details</button>
+      </div>
+      <div class="calendar">
+        ${this.generateCalendar(recentStats)}
+      </div>
+      <div class="calendar-legend">
+        <span>Less</span>
+        <div class="legend-box" style="background: var(--vscode-input-background);"></div>
+        <div class="legend-box" style="background: #0e4429;"></div>
+        <div class="legend-box" style="background: #006d32;"></div>
+        <div class="legend-box" style="background: #26a641;"></div>
+        <div class="legend-box" style="background: #39d353;"></div>
+        <span>More</span>
+      </div>
+      ${stats.streak_days > 0 ? `
+        <div style="text-align: center; margin-top: 20px; font-size: 16px; color: var(--vscode-button-background);">
+          🔥 <strong>${stats.streak_days} day streak!</strong>
+        </div>
+      ` : ''}
+    </div>
+  ` : ''}
+
   <script>
     const vscode = acquireVsCodeApi();
 
@@ -346,9 +476,53 @@ export class HomeWebviewProvider {
         deckId: deckId
       });
     }
+
+    function showStats() {
+      vscode.postMessage({
+        command: 'showStats'
+      });
+    }
   </script>
 </body>
 </html>`;
+  }
+
+  private generateCalendar(recentStats: { date: string; reviews: number }[]): string {
+    // Group days into weeks
+    const weeks: { date: string; reviews: number }[][] = [];
+    let currentWeek: { date: string; reviews: number }[] = [];
+
+    recentStats.forEach((stat, index) => {
+      currentWeek.push(stat);
+
+      if (currentWeek.length === 7 || index === recentStats.length - 1) {
+        weeks.push([...currentWeek]);
+        currentWeek = [];
+      }
+    });
+
+    // Find max reviews for level calculation
+    const maxReviews = Math.max(...recentStats.map(s => s.reviews));
+
+    return weeks.map(week => {
+      const days = week.map(day => {
+        const level = this.getReviewLevel(day.reviews, maxReviews);
+        return `<div class="day" data-level="${level}" data-reviews="${day.reviews}"></div>`;
+      }).join('');
+
+      return `<div class="week">${days}</div>`;
+    }).join('');
+  }
+
+  private getReviewLevel(reviews: number, maxReviews: number): number {
+    if (reviews === 0) {return 0;}
+    if (maxReviews === 0) {return 0;}
+
+    const ratio = reviews / maxReviews;
+    if (ratio >= 0.75) {return 4;}
+    if (ratio >= 0.5) {return 3;}
+    if (ratio >= 0.25) {return 2;}
+    return 1;
   }
 
   private escapeHtml(text: string): string {

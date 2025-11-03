@@ -129,6 +129,9 @@ async function showHome() {
     storage,
     (deckId) => {
       startReview(deckId);
+    },
+    () => {
+      showStats();
     }
   );
   await homeWebview.show();
