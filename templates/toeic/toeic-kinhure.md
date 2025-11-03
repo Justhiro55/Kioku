@@ -1,311 +1,311 @@
-# TOEIC Golden Words - 600 Level
+# TOEIC 金のフレーズ - 600点レベル
 
-## Basic Business Vocabulary
+## 基礎ビジネス語彙
 
 ### accomplish
-to complete something successfully
+達成する、成し遂げる
 
 ### achievement
-something successfully completed
+達成、業績
 
 ### acquire
-to obtain or get something
+獲得する、習得する
 
 ### advance
-to move forward or make progress
+前進する、進歩する
 
 ### advantage
-a beneficial factor or condition
+利点、優位性
 
 ### afford
-to be able to pay for something
+〜する余裕がある、買うことができる
 
 ### agreement
-a mutual understanding or arrangement
+合意、契約
 
 ### allocate
-to distribute resources for a specific purpose
+割り当てる、配分する
 
 ### analyze
-to examine something in detail
+分析する
 
 ### annual
-happening once a year
+年1回の、年次の
 
 ### appointment
-an arrangement to meet someone
+予約、任命
 
 ### approach
-a way of dealing with something
+アプローチ、取り組み方
 
 ### approve
-to officially accept or agree to something
+承認する、認可する
 
 ### arrange
-to organize or plan something
+手配する、整理する
 
 ### assign
-to give someone a task or responsibility
+割り当てる、任命する
 
 ### assist
-to help someone
+手伝う、援助する
 
 ### associate
-to connect things in your mind
+関連付ける、提携する
 
 ### assume
-to believe something is true without proof
+仮定する、引き受ける
 
 ### attain
-to achieve or reach something
+達成する、到達する
 
 ### attend
-to be present at an event
+出席する、参加する
 
-## Office Environment
+## オフィス環境
 
 ### available
-able to be used or obtained
+利用できる、入手可能な
 
 ### benefit
-an advantage or positive effect
+利益、恩恵
 
 ### budget
-a plan for how to spend money
+予算
 
 ### capacity
-the maximum amount that can be held
+収容能力、容量
 
 ### certificate
-an official document proving something
+証明書、認定書
 
 ### circumstance
-a fact or condition connected with an event
+状況、事情
 
 ### colleague
-a person you work with
+同僚
 
 ### commission
-a payment for selling something
+手数料、委員会
 
 ### committee
-a group formed for a specific purpose
+委員会
 
 ### competent
-having the necessary skills
+有能な、適格な
 
 ### competitive
-as good as or better than others
+競争力のある
 
 ### complaint
-an expression of dissatisfaction
+苦情、不満
 
 ### comprehensive
-including everything
+包括的な、総合的な
 
 ### conference
-a large formal meeting
+会議、協議会
 
 ### confidential
-intended to be kept secret
+機密の、内密の
 
 ### confirm
-to establish the truth of something
+確認する、裏付ける
 
 ### consider
-to think carefully about something
+検討する、考慮する
 
 ### consistent
-always behaving the same way
+一貫した、矛盾のない
 
 ### contract
-a written legal agreement
+契約、契約書
 
 ### contribute
-to give something to help achieve a goal
+貢献する、寄与する
 
-## Time Management
+## 時間管理
 
 ### deadline
-the latest time by which something must be done
+締め切り、期限
 
 ### delay
-to make something happen later
+遅延、延期する
 
 ### deliver
-to bring goods to a place
+配達する、引き渡す
 
 ### demand
-an urgent request
+需要、要求する
 
 ### demonstrate
-to show how something works
+実演する、証明する
 
 ### department
-a division of an organization
+部門、部署
 
 ### deposit
-money placed in a bank account
+預金、保証金
 
 ### detailed
-including many facts or aspects
+詳細な、細かい
 
 ### determine
-to find out or decide something
+決定する、確定する
 
 ### develop
-to grow or create something new
+開発する、発展させる
 
 ### direction
-the path along which something moves
+方向、指示
 
 ### discount
-a reduction in price
+割引
 
 ### distribute
-to give out or deliver
+配布する、分配する
 
 ### document
-an official paper with information
+文書、書類
 
 ### domestic
-relating to one's own country
+国内の、家庭の
 
 ### efficient
-working well without wasting time or energy
+効率的な
 
 ### employment
-the state of having a job
+雇用、就職
 
 ### enable
-to make something possible
+可能にする、有効にする
 
 ### encounter
-to meet or experience something
+遭遇する、直面する
 
 ### encourage
-to give support or confidence
+奨励する、励ます
 
-## Financial Terms
+## 金融用語
 
 ### ensure
-to make certain that something happens
+確実にする、保証する
 
 ### establish
-to set up or create something
+設立する、確立する
 
 ### estimate
-to roughly calculate something
+見積もる、推定する
 
 ### evaluate
-to assess the value or quality of something
+評価する、査定する
 
 ### exceed
-to go beyond a limit
+超える、上回る
 
 ### executive
-a senior manager in an organization
+重役、管理職
 
 ### exhibit
-to display something publicly
+展示する、示す
 
 ### expand
-to become or make larger
+拡大する、広げる
 
 ### expect
-to think something will happen
+期待する、予想する
 
 ### expenditure
-the spending of money
+支出、経費
 
 ### expense
-the cost of something
+費用、経費
 
 ### experienced
-having knowledge from doing something
+経験豊富な
 
 ### expertise
-special skill or knowledge
+専門知識、専門技術
 
 ### export
-to send goods to another country
+輸出する
 
 ### extensive
-covering a large area or range
+広範囲の、大規模な
 
 ### facility
-a building or equipment for a purpose
+施設、設備
 
 ### figure
-a number or amount
+数字、図表
 
 ### financial
-relating to money
+財務の、金融の
 
 ### flexible
-able to change easily
+柔軟な、融通の利く
 
 ### forecast
-a prediction of future events
+予測、予報
 
-## Customer Service
+## 顧客サービス
 
 ### frequently
-happening often
+頻繁に、しばしば
 
 ### fundamental
-basic and important
+基本的な、根本的な
 
 ### generate
-to produce or create
+生み出す、発生させる
 
 ### guarantee
-a promise that something will happen
+保証する、保証
 
 ### handle
-to deal with or manage something
+扱う、処理する
 
 ### headquarters
-the main office of an organization
+本社、本部
 
 ### implement
-to put a plan into action
+実施する、導入する
 
 ### import
-to bring goods from another country
+輸入する
 
 ### improve
-to make or become better
+改善する、向上させる
 
 ### incentive
-something that motivates action
+インセンティブ、動機
 
 ### income
-money received regularly
+収入、所得
 
 ### increase
-to become or make greater
+増加する、増やす
 
 ### indicate
-to show or point out
+示す、表示する
 
 ### individual
-a single person
+個人、個々の
 
 ### industry
-economic activity of manufacturing
+産業、業界
 
 ### inform
-to tell someone about something
+知らせる、通知する
 
 ### initial
-existing at the beginning
+最初の、初期の
 
 ### initiative
-the ability to act independently
+主導権、率先
 
 ### install
-to set up equipment for use
+設置する、取り付ける
 
 ### instruction
-detailed information on how to do something
+指示、説明書
