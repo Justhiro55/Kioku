@@ -43,6 +43,12 @@ export class HomeWebviewProvider {
     await this.updateWebview();
   }
 
+  async refresh() {
+    if (this.panel) {
+      await this.updateWebview();
+    }
+  }
+
   private async handleMessage(message: any) {
     if (message.command === 'startReview') {
       this.onStartReview(message.deckId);
@@ -128,6 +134,9 @@ export class HomeWebviewProvider {
     const allCards = await this.storage.getCards();
     allCards.push(newCard);
     await this.context.globalState.update('cards', allCards);
+
+    // Refresh home screen if returning to it
+    await this.refresh();
   }
 
   private async updateWebview() {

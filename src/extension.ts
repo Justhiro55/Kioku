@@ -20,6 +20,7 @@ let filterManager: FilterManager;
 let statisticsManager: StatisticsManager;
 let statusBarItem: vscode.StatusBarItem;
 let context: vscode.ExtensionContext;
+let currentHomeWebview: any = null;
 
 export function activate(ctx: vscode.ExtensionContext) {
   console.log('Kioku extension is now active');
@@ -141,9 +142,14 @@ async function showHome() {
         );
         deckTreeProvider.refresh();
         updateStatusBar();
+        // Refresh home screen
+        if (currentHomeWebview) {
+          await currentHomeWebview.refresh();
+        }
       }
     }
   );
+  currentHomeWebview = homeWebview;
   await homeWebview.show();
 }
 
