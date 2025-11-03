@@ -102,6 +102,14 @@
         "title": "Kioku: Export to Markdown"
       },
       {
+        "command": "kioku.importFromURL",
+        "title": "Kioku: Import Deck from URL"
+      },
+      {
+        "command": "kioku.shareDeck",
+        "title": "Kioku: Share Deck (Copy to Clipboard)"
+      },
+      {
         "command": "kioku.searchCards",
         "title": "Kioku: Search Cards"
       },

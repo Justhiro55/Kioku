@@ -24,6 +24,8 @@
 ### Data Management
 - **💾 Flexible Storage**: Choose between globalState or SQLite
 - **📝 Markdown Import/Export**: Import decks from markdown files (engineer-friendly!)
+- **🌐 URL Import**: Import decks from GitHub Gist or any markdown URL
+- **📤 Easy Sharing**: Share decks via clipboard for Gist creation
 - **📊 CSV/JSON Support**: Share and backup your cards in multiple formats
 - **🔄 Easy Migration**: One-click migration to SQLite
 
@@ -78,6 +80,18 @@
 
 See [example-deck.md](example-deck.md) for a complete example.
 
+#### From URL (Community Decks! 🌐)
+1. Get a Gist URL (e.g., from a friend or community)
+2. Run `Kioku: Import Deck from URL`
+3. Paste the URL
+4. Cards imported instantly!
+
+**Share your deck:**
+1. Run `Kioku: Share Deck (Copy to Clipboard)`
+2. Go to [gist.github.com](https://gist.github.com)
+3. Create new Gist, paste content
+4. Share the URL!
+
 #### From Selection
 1. Select text in any editor (format: `word - meaning`)
 2. Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
@@ -127,6 +141,8 @@ See [example-deck.md](example-deck.md) for a complete example.
 - `Kioku: Import from Markdown` - Import deck from markdown file
 - `Kioku: Create Cards from Current Markdown File` - Quick import from open file
 - `Kioku: Export to Markdown` - Export deck to markdown
+- `Kioku: Import Deck from URL` - Import from GitHub Gist or markdown URL
+- `Kioku: Share Deck (Copy to Clipboard)` - Share deck for Gist creation
 - `Kioku: Export to CSV` - Export all cards
 - `Kioku: Import from CSV` - Import cards from CSV
 - `Kioku: Import from JSON` - Import cards from JSON
@@ -184,15 +200,16 @@ Cards are automatically scheduled based on your performance.
 - [x] Statistics dashboard
 - [x] Streak calculation
 
-### Sprint 5 (Markdown & UX) ✅
+### Sprint 5 (Markdown & Community Sharing) ✅
 - [x] Markdown import/export
+- [x] URL-based deck import (Gist support)
+- [x] Share deck to clipboard
 - [x] Undo functionality (Cmd+Z)
 - [x] Review start button in sidebar
 - [x] Enhanced streak visualization
 
 ### Future Enhancements
-- [ ] GitHub OAuth integration
-- [ ] Cloud sync via Gist
+- [ ] GitHub OAuth for automatic Gist publishing
 - [ ] Media support (images, audio)
 - [ ] AI card generation
 - [ ] Gamification (XP, badges)

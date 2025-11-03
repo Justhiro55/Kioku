@@ -6,6 +6,7 @@ import { StatsWebviewProvider } from './statsWebview';
 import { exportCardsToCSV, importCardsFromCSV } from './csvHandler';
 import { importFromJSON, createFromJSONFile, exportToJSON } from './jsonHandler';
 import { MarkdownHandler } from './markdownHandler';
+import { GistHandler } from './gistHandler';
 import { FilterManager } from './filterManager';
 import { StatisticsManager } from './statistics';
 import { migrateToSQLite } from './migration';
@@ -93,6 +94,17 @@ export function activate(ctx: vscode.ExtensionContext) {
       }
     }),
     vscode.commands.registerCommand('kioku.exportMarkdown', () => MarkdownHandler.exportToMarkdown(storage)),
+    vscode.commands.registerCommand('kioku.importFromURL', async () => {
+      const result = await GistHandler.importFromURL(storage);
+      if (result) {
+        vscode.window.showInformationMessage(
+          `Imported ${result.cardsCount} cards to deck "${result.deckName}"`
+        );
+        deckTreeProvider.refresh();
+        updateStatusBar();
+      }
+    }),
+    vscode.commands.registerCommand('kioku.shareDeck', () => GistHandler.shareDeckAsMarkdown(storage)),
     vscode.commands.registerCommand('kioku.searchCards', searchCards),
     vscode.commands.registerCommand('kioku.filterByTag', filterByTag),
     vscode.commands.registerCommand('kioku.clearFilters', clearFilters),
