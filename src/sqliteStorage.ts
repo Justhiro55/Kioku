@@ -181,6 +181,17 @@ export class SQLiteStorage {
     };
   }
 
+  async createDeck(name: string): Promise<Deck> {
+    const newDeck: Deck = {
+      id: require('uuid').v4(),
+      name,
+      card_ids: [],
+      created_at: new Date().toISOString()
+    };
+    await this.saveDeck(newDeck);
+    return newDeck;
+  }
+
   async saveDeck(deck: Deck): Promise<void> {
     this.db.prepare('INSERT INTO decks (id, name, created_at) VALUES (?, ?, ?)').run(
       deck.id,

@@ -2,6 +2,21 @@
 
 All notable changes to the Kioku extension will be documented in this file.
 
+## [0.5.0] - Sprint 5: Markdown Import & Enhanced UX
+
+### Added
+- **Markdown Import**: Import flashcard decks from markdown files with `Kioku: Import from Markdown`
+- **Create from Markdown**: Create cards from currently open markdown file with `Kioku: Create Cards from Current Markdown File`
+- **Markdown Export**: Export decks to markdown format with `Kioku: Export to Markdown`
+- **Undo Functionality**: Press Cmd+Z (Mac) or Ctrl+Z (Windows/Linux) to undo last card rating during review
+- **Review Start Button**: Added prominent "Start Review" button in sidebar navigation
+- **Enhanced Streak Display**: Animated streak badge with encouraging messages and additional statistics
+
+### Changed
+- Statistics dashboard now shows enhanced streak visualization with gradient background
+- Streak messages adapt based on streak length (1-100+ days)
+- Added average cards per session metric to statistics
+
 ## [0.4.0] - Sprint 4: Analytics & Progress Tracking
 
 ### Added

@@ -5,6 +5,7 @@ import { ReviewWebviewProvider } from './reviewWebview';
 import { StatsWebviewProvider } from './statsWebview';
 import { exportCardsToCSV, importCardsFromCSV } from './csvHandler';
 import { importFromJSON, createFromJSONFile, exportToJSON } from './jsonHandler';
+import { MarkdownHandler } from './markdownHandler';
 import { FilterManager } from './filterManager';
 import { StatisticsManager } from './statistics';
 import { migrateToSQLite } from './migration';
@@ -71,6 +72,27 @@ export function activate(ctx: vscode.ExtensionContext) {
       deckTreeProvider.refresh();
       updateStatusBar();
     }),
+    vscode.commands.registerCommand('kioku.importMarkdown', async () => {
+      const result = await MarkdownHandler.importFromMarkdown(storage);
+      if (result) {
+        vscode.window.showInformationMessage(
+          `Imported ${result.cardsCount} cards to deck "${result.deckName}"`
+        );
+        deckTreeProvider.refresh();
+        updateStatusBar();
+      }
+    }),
+    vscode.commands.registerCommand('kioku.createFromMarkdown', async () => {
+      const result = await MarkdownHandler.createFromCurrentMarkdownFile(storage);
+      if (result) {
+        vscode.window.showInformationMessage(
+          `Created ${result.cardsCount} cards in deck "${result.deckName}"`
+        );
+        deckTreeProvider.refresh();
+        updateStatusBar();
+      }
+    }),
+    vscode.commands.registerCommand('kioku.exportMarkdown', () => MarkdownHandler.exportToMarkdown(storage)),
     vscode.commands.registerCommand('kioku.searchCards', searchCards),
     vscode.commands.registerCommand('kioku.filterByTag', filterByTag),
     vscode.commands.registerCommand('kioku.clearFilters', clearFilters),

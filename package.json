@@ -2,7 +2,7 @@
   "name": "kioku",
   "displayName": "Kioku - Flashcard Learning",
   "description": "Powerful flashcard learning with spaced repetition, tags, search, and progress tracking",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "Justhiro55",
   "author": {
     "name": "Justhiro55"
@@ -88,6 +88,18 @@
       {
         "command": "kioku.createFromJSON",
         "title": "Kioku: Create Cards from Current JSON File"
+      },
+      {
+        "command": "kioku.importMarkdown",
+        "title": "Kioku: Import from Markdown"
+      },
+      {
+        "command": "kioku.createFromMarkdown",
+        "title": "Kioku: Create Cards from Current Markdown File"
+      },
+      {
+        "command": "kioku.exportMarkdown",
+        "title": "Kioku: Export to Markdown"
       },
       {
         "command": "kioku.searchCards",

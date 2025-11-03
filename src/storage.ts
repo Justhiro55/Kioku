@@ -167,6 +167,20 @@ export class StorageManager {
   }
 
   /**
+   * Create a new deck
+   */
+  async createDeck(name: string): Promise<Deck> {
+    const newDeck: Deck = {
+      id: uuidv4(),
+      name,
+      card_ids: [],
+      created_at: new Date().toISOString()
+    };
+    await this.saveDeck(newDeck);
+    return newDeck;
+  }
+
+  /**
    * Save a new deck
    */
   async saveDeck(deck: Deck): Promise<void> {

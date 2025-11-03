@@ -23,7 +23,8 @@
 
 ### Data Management
 - **💾 Flexible Storage**: Choose between globalState or SQLite
-- **📊 CSV Import/Export**: Share and backup your cards
+- **📝 Markdown Import/Export**: Import decks from markdown files (engineer-friendly!)
+- **📊 CSV/JSON Support**: Share and backup your cards in multiple formats
 - **🔄 Easy Migration**: One-click migration to SQLite
 
 ### Progress Tracking
@@ -58,6 +59,26 @@
 
 ### Creating Cards
 
+#### From Markdown (Recommended for Engineers! 🚀)
+1. Create a `.md` file with your cards:
+   ```markdown
+   # JavaScript Basics
+
+   ## const
+   再代入不可の定数宣言
+   - Tags: es6, variable
+
+   ## let
+   ブロックスコープの変数宣言
+   - Tags: es6, variable
+   ```
+2. Open the file in VSCode
+3. Run `Kioku: Create Cards from Current Markdown File`
+4. Done! All cards imported automatically.
+
+See [example-deck.md](example-deck.md) for a complete example.
+
+#### From Selection
 1. Select text in any editor (format: `word - meaning`)
 2. Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
 3. Run `Kioku: Add from Selection`
@@ -65,10 +86,14 @@
 
 ### Reviewing Cards
 
-1. Open Command Palette
-2. Run `Kioku: Start Review`
-3. Type your answer (if spell mode is enabled)
-4. Rate how well you remembered (0-5)
+1. Click **Start Review** button in Kioku sidebar (or use Command Palette)
+2. Press Space/Enter to reveal answer
+3. Rate using keyboard shortcuts:
+   - `1` - Again (forgot)
+   - `2` - Hard (difficult recall)
+   - `3` - Good (correct)
+   - `4` - Easy (instant recall)
+4. Press `Cmd+Z` (Mac) / `Ctrl+Z` (Windows) to undo last rating
 
 ### Managing Decks
 
@@ -99,8 +124,13 @@
 - `Kioku: Clear Filters` - Remove all filters
 
 ### Data
+- `Kioku: Import from Markdown` - Import deck from markdown file
+- `Kioku: Create Cards from Current Markdown File` - Quick import from open file
+- `Kioku: Export to Markdown` - Export deck to markdown
 - `Kioku: Export to CSV` - Export all cards
 - `Kioku: Import from CSV` - Import cards from CSV
+- `Kioku: Import from JSON` - Import cards from JSON
+- `Kioku: Export to JSON` - Export cards to JSON
 - `Kioku: Migrate to SQLite` - Migrate to SQLite storage
 
 ### Analytics
@@ -153,6 +183,12 @@ Cards are automatically scheduled based on your performance.
 - [x] Contribution calendar
 - [x] Statistics dashboard
 - [x] Streak calculation
+
+### Sprint 5 (Markdown & UX) ✅
+- [x] Markdown import/export
+- [x] Undo functionality (Cmd+Z)
+- [x] Review start button in sidebar
+- [x] Enhanced streak visualization
 
 ### Future Enhancements
 - [ ] GitHub OAuth integration
