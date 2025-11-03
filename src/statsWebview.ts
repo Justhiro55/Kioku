@@ -168,15 +168,66 @@ export class StatsWebviewProvider {
       border-radius: 2px;
     }
 
+    .streak-container {
+      background: var(--vscode-input-background);
+      border: 2px solid var(--vscode-button-background);
+      border-radius: 12px;
+      padding: 30px;
+      margin: 30px 0;
+      text-align: center;
+    }
+
     .streak-badge {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 15px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 10px 20px;
-      border-radius: 20px;
+      padding: 20px 40px;
+      border-radius: 30px;
       font-weight: bold;
-      font-size: 18px;
-      margin: 20px 0;
+      font-size: 32px;
+      margin: 10px 0;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .streak-icon {
+      font-size: 40px;
+      animation: flicker 1.5s infinite alternate;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    .streak-message {
+      font-size: 14px;
+      color: var(--vscode-descriptionForeground);
+      margin-top: 15px;
+    }
+
+    .streak-stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 20px;
+    }
+
+    .streak-stat {
+      text-align: center;
+    }
+
+    .streak-stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--vscode-button-background);
+    }
+
+    .streak-stat-label {
+      font-size: 12px;
+      color: var(--vscode-descriptionForeground);
+      margin-top: 5px;
     }
   </style>
 </head>
@@ -205,11 +256,36 @@ export class StatsWebviewProvider {
     </div>
   </div>
 
-  ${stats.streak_days > 0 ? `
-    <div class="streak-badge">
-      🔥 ${stats.streak_days} Day Streak!
+  <div class="streak-container">
+    <h2 style="margin: 0 0 20px 0;">🏆 Learning Streak</h2>
+    ${stats.streak_days > 0 ? `
+      <div class="streak-badge">
+        <span class="streak-icon">🔥</span>
+        <span>${stats.streak_days} ${stats.streak_days === 1 ? 'Day' : 'Days'}</span>
+      </div>
+      <div class="streak-message">
+        ${this.getStreakMessage(stats.streak_days)}
+      </div>
+    ` : `
+      <div style="color: var(--vscode-descriptionForeground); padding: 20px;">
+        Start reviewing today to begin your streak! 💪
+      </div>
+    `}
+    <div class="streak-stats">
+      <div class="streak-stat">
+        <div class="streak-stat-value">${stats.streak_days}</div>
+        <div class="streak-stat-label">Current Streak</div>
+      </div>
+      <div class="streak-stat">
+        <div class="streak-stat-value">${stats.total_review_sessions}</div>
+        <div class="streak-stat-label">Total Sessions</div>
+      </div>
+      <div class="streak-stat">
+        <div class="streak-stat-value">${Math.round(stats.total_reviews / Math.max(stats.total_review_sessions, 1))}</div>
+        <div class="streak-stat-label">Avg Cards/Session</div>
+      </div>
     </div>
-  ` : ''}
+  </div>
 
   <h2>📅 Review Calendar (Last 90 Days)</h2>
   <div class="calendar">
@@ -281,5 +357,15 @@ export class StatsWebviewProvider {
     if (ratio >= 0.5) {return 3;}
     if (ratio >= 0.25) {return 2;}
     return 1;
+  }
+
+  private getStreakMessage(days: number): string {
+    if (days >= 100) {return "Legendary! You're a learning machine! 🏆";}
+    if (days >= 50) {return "Incredible dedication! Keep it up! 🌟";}
+    if (days >= 30) {return "Amazing consistency! You're on fire! 🔥";}
+    if (days >= 14) {return "Two weeks strong! Great habit! 💪";}
+    if (days >= 7) {return "One week streak! You're doing great! 🎉";}
+    if (days >= 3) {return "Building momentum! Keep going! 🚀";}
+    return "Great start! Build your streak! ✨";
   }
 }

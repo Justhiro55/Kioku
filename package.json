@@ -130,9 +130,14 @@
       ],
       "view/title": [
         {
+          "command": "kioku.startReview",
+          "when": "view == kioku-decks",
+          "group": "navigation@1"
+        },
+        {
           "command": "kioku.createDeck",
           "when": "view == kioku-decks",
-          "group": "navigation"
+          "group": "navigation@2"
         }
       ]
     },

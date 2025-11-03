@@ -12,6 +12,7 @@ export class ReviewWebviewProvider {
   private correctCount: number = 0;
   private startTime: number = 0;
   private statisticsManager: StatisticsManager;
+  private reviewHistory: Array<{ cardIndex: number; originalCard: Card }> = [];
 
   constructor(
     private context: vscode.ExtensionContext,
@@ -72,13 +73,27 @@ export class ReviewWebviewProvider {
       case 'skip':
         this.nextCard();
         break;
+
+      case 'undo':
+        await this.undoLastReview();
+        break;
     }
   }
 
   private async rateCard(quality: number) {
     const card = this.cards[this.currentIndex];
+
+    // Save original state for undo
+    this.reviewHistory.push({
+      cardIndex: this.currentIndex,
+      originalCard: JSON.parse(JSON.stringify(card))
+    });
+
     const updatedCard = SM2Algorithm.calculateNextReview(card, quality);
     await this.storage.updateCard(updatedCard);
+
+    // Update local cards array
+    this.cards[this.currentIndex] = updatedCard;
 
     // Track correct answers (quality >= 3)
     if (quality >= 3) {
@@ -86,6 +101,29 @@ export class ReviewWebviewProvider {
     }
 
     this.nextCard();
+  }
+
+  private async undoLastReview() {
+    if (this.reviewHistory.length === 0) {
+      return; // Nothing to undo
+    }
+
+    const lastReview = this.reviewHistory.pop()!;
+
+    // Restore original card state
+    await this.storage.updateCard(lastReview.originalCard);
+    this.cards[lastReview.cardIndex] = lastReview.originalCard;
+
+    // Go back to that card
+    this.currentIndex = lastReview.cardIndex;
+    this.showingAnswer = false;
+
+    // Adjust correct count
+    if (this.correctCount > 0) {
+      this.correctCount--;
+    }
+
+    this.updateWebview();
   }
 
   private nextCard() {
@@ -384,6 +422,13 @@ export class ReviewWebviewProvider {
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+      // Undo shortcut (Cmd+Z on Mac, Ctrl+Z on Windows/Linux)
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        e.preventDefault();
+        vscode.postMessage({ command: 'undo' });
+        return;
+      }
+
       if (!showingAnswer) {
         if (e.key === ' ' || e.key === 'Enter') {
           e.preventDefault();
