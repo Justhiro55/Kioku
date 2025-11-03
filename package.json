@@ -27,7 +27,7 @@
     "sm2",
     "education"
   ],
-  "icon": "resources/icon.png",
+  "icon": "resources/kioku.png",
   "engines": {
     "vscode": "^1.85.0"
   },

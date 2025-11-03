@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="resources/icon.png" alt="Kioku Logo" width="120" />
+<img src="resources/kioku.png" alt="Kioku Logo" width="120" />
 
 # Kioku (記憶)
 

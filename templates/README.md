@@ -113,9 +113,37 @@ Perfect for JLPT N5 exam preparation or Japanese beginners!
 
 ## 🎯 Creating Your Own Templates
 
-Want to create custom flashcard decks? It's easy! Just follow the Markdown format:
+Want to create custom flashcard decks? **Use AI to generate templates for any topic!**
 
-### Basic Format
+### ✨ AI-Powered Template Creation
+
+You can use generative AI (ChatGPT, Claude, etc.) to create custom learning decks:
+
+**Prompt Example:**
+```
+Create a flashcard deck in Markdown format for [YOUR TOPIC].
+Use H2 headings (##) for card fronts and paragraphs for card backs.
+Create 50 cards covering the most important concepts.
+
+Format:
+# [Deck Name]
+
+## Card Front 1
+Card back explanation
+
+## Card Front 2
+Card back explanation
+```
+
+**Example Use Cases:**
+- **Programming:** "Create flashcards for React Hooks" → Learn useState, useEffect, useContext
+- **Languages:** "Create Spanish vocabulary for travel" → Essential phrases and words
+- **Interview Prep:** "Create System Design flashcards" → Key concepts and patterns
+- **Math:** "Create calculus formulas deck" → Derivatives, integrals, theorems
+- **History:** "Create WWII timeline flashcards" → Important events and dates
+- **Medicine:** "Create anatomy terminology deck" → Body parts and functions
+
+### 📝 Markdown Format
 
 ```markdown
 # Your Deck Name
@@ -127,8 +155,7 @@ Card back explanation
 Card back explanation
 ```
 
-### Advanced Format with Categories
-
+**Advanced Format with Categories:**
 ```markdown
 # My Custom Deck
 
@@ -146,39 +173,14 @@ Card back explanation
 Card back explanation
 ```
 
-### Tips for Creating Templates
+### 💡 Tips for Effective Templates
 
 1. **Use H2 (##) for card fronts** - Each heading becomes the front of a card
 2. **Paragraphs are card backs** - The text below each heading is the back
 3. **Keep it concise** - Short, focused cards work best for retention
 4. **Add context** - Include examples or additional info on the back
 5. **Group by topic** - Use H1 for deck name, H2 for categories (optional)
-
-### Example: Creating a Git Commands Deck
-
-```markdown
-# Git Commands
-
-## git init
-Initialize a new Git repository in the current directory
-
-## git clone [url]
-Create a local copy of a remote repository
-
-## git add [file]
-Stage changes for the next commit
-
-## git commit -m "[message]"
-Save staged changes with a descriptive message
-
-## git push
-Upload local commits to remote repository
-
-## git pull
-Download and merge changes from remote repository
-```
-
-Save this as `git-commands.md` and import it using any of the methods above!
+6. **Use AI assistants** - Generate decks quickly for any subject
 
 ---
 
