@@ -7,6 +7,7 @@ import { exportCardsToCSV, importCardsFromCSV } from './csvHandler';
 import { importFromJSON, createFromJSONFile, exportToJSON } from './jsonHandler';
 import { MarkdownHandler } from './markdownHandler';
 import { GistHandler } from './gistHandler';
+import { HomeWebviewProvider } from './homeWebview';
 import { FilterManager } from './filterManager';
 import { StatisticsManager } from './statistics';
 import { migrateToSQLite } from './migration';
@@ -49,6 +50,7 @@ export function activate(ctx: vscode.ExtensionContext) {
 
   // Register commands
   context.subscriptions.push(
+    vscode.commands.registerCommand('kioku.showHome', showHome),
     vscode.commands.registerCommand('kioku.addFromSelection', addFromSelection),
     vscode.commands.registerCommand('kioku.startReview', startReview),
     vscode.commands.registerCommand('kioku.openDeck', openDeck),
@@ -116,6 +118,20 @@ export function activate(ctx: vscode.ExtensionContext) {
 
   // Refresh status bar periodically
   setInterval(updateStatusBar, 60000); // Every minute
+}
+
+/**
+ * Show home screen
+ */
+async function showHome() {
+  const homeWebview = new HomeWebviewProvider(
+    context,
+    storage,
+    (deckId) => {
+      startReview(deckId);
+    }
+  );
+  await homeWebview.show();
 }
 
 /**

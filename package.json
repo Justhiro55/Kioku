@@ -42,6 +42,11 @@
   "contributes": {
     "commands": [
       {
+        "command": "kioku.showHome",
+        "title": "Kioku: Show Home",
+        "icon": "$(home)"
+      },
+      {
         "command": "kioku.addFromSelection",
         "title": "Kioku: Add from Selection"
       },
@@ -158,6 +163,11 @@
         }
       ],
       "view/title": [
+        {
+          "command": "kioku.showHome",
+          "when": "view == kioku-decks",
+          "group": "navigation@0"
+        },
         {
           "command": "kioku.startReview",
           "when": "view == kioku-decks",
