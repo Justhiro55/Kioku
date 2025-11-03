@@ -166,17 +166,12 @@
         {
           "command": "kioku.showHome",
           "when": "view == kioku-decks",
-          "group": "navigation@0"
-        },
-        {
-          "command": "kioku.startReview",
-          "when": "view == kioku-decks",
-          "group": "navigation@1"
+          "group": "navigation"
         },
         {
           "command": "kioku.createDeck",
           "when": "view == kioku-decks",
-          "group": "navigation@2"
+          "group": "navigation"
         }
       ]
     },
