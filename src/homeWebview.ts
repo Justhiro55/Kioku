@@ -17,13 +17,13 @@ interface WebviewMessage {
 interface DeckStat {
   id: string;
   name: string;
-  total: number;
-  due: number;
+  totalCards: number;
+  dueCards: number;
 }
 
 interface RecentStat {
   date: string;
-  count: number;
+  reviews: number;
 }
 
 interface Stats {
@@ -90,16 +90,16 @@ export class HomeWebviewProvider {
       if (this.onImportDeck) {
         this.onImportDeck();
       }
-    } else if (message.command === 'viewDeck') {
+    } else if (message.command === 'viewDeck' && message.deckId) {
       await this.showDeckBrowser(message.deckId);
-    } else if (message.command === 'addCard') {
+    } else if (message.command === 'addCard' && message.deckId) {
       await this.showAddCard(message.deckId);
     } else if (message.command === 'closeModal') {
       await this.updateWebview();
-    } else if (message.command === 'deleteCard') {
+    } else if (message.command === 'deleteCard' && message.cardId && message.deckId) {
       await this.deleteCard(message.cardId);
       await this.showDeckBrowser(message.deckId);
-    } else if (message.command === 'saveNewCard') {
+    } else if (message.command === 'saveNewCard' && message.deckId && message.front && message.back) {
       await this.saveNewCard(message.deckId, message.front, message.back);
       await this.showDeckBrowser(message.deckId);
     }

@@ -80,7 +80,9 @@ export class ReviewWebviewProvider {
         break;
 
       case 'rate':
-        await this.rateCard(message.quality);
+        if (message.quality !== undefined) {
+          await this.rateCard(message.quality);
+        }
         break;
 
       case 'skip':

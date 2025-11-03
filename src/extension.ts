@@ -11,7 +11,7 @@ import { HomeWebviewProvider } from './homeWebview';
 import { FilterManager } from './filterManager';
 import { StatisticsManager } from './statistics';
 import { migrateToSQLite } from './migration';
-import { Card } from './types';
+import { Card, Deck } from './types';
 import { SM2Algorithm } from './sm2';
 
 let storage: StorageManager;

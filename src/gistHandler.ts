@@ -168,6 +168,11 @@ export class GistHandler {
     }
 
     const deck = (await storage.getDecks()).find((d: Deck) => d.id === selectedDeckId);
+    if (!deck) {
+      vscode.window.showErrorMessage('Deck not found.');
+      return;
+    }
+
     const cards = await storage.getCardsByDeck(selectedDeckId);
 
     if (cards.length === 0) {
