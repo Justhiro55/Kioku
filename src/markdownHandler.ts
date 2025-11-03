@@ -53,8 +53,8 @@ export class MarkdownHandler {
         continue;
       }
 
-      // H2 = New card front
-      if (line.startsWith('## ')) {
+      // H2 or H3 = New card front
+      if (line.startsWith('## ') || line.startsWith('### ')) {
         // Save previous card if exists
         if (currentFront && currentBack) {
           cards.push(this.createCard(
@@ -67,7 +67,8 @@ export class MarkdownHandler {
         }
 
         // Start new card
-        currentFront = line.substring(3).trim();
+        const headerLevel = line.startsWith('### ') ? 4 : 3;
+        currentFront = line.substring(headerLevel).trim();
         currentBack = '';
         currentTags = [];
         currentExamples = [];

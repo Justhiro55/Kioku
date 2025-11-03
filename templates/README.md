@@ -145,6 +145,7 @@ Card back explanation
 
 ### 📝 Markdown Format
 
+**Simple Format (H2 for cards):**
 ```markdown
 # Your Deck Name
 
@@ -155,7 +156,7 @@ Card back explanation
 Card back explanation
 ```
 
-**Advanced Format with Categories:**
+**Advanced Format with Categories (H2 for categories, H3 for cards):**
 ```markdown
 # My Custom Deck
 
@@ -173,13 +174,15 @@ Card back explanation
 Card back explanation
 ```
 
+**Note:** Both H2 (`##`) and H3 (`###`) headings create flashcards. Use H2 for simple decks, or combine H2 (categories) + H3 (cards) for organized decks.
+
 ### 💡 Tips for Effective Templates
 
-1. **Use H2 (##) for card fronts** - Each heading becomes the front of a card
-2. **Paragraphs are card backs** - The text below each heading is the back
+1. **Use H2 or H3 for card fronts** - Each heading becomes the front of a card
+2. **Organize with categories** - Use H2 for categories, H3 for individual cards
 3. **Keep it concise** - Short, focused cards work best for retention
 4. **Add context** - Include examples or additional info on the back
-5. **Group by topic** - Use H1 for deck name, H2 for categories (optional)
+5. **One concept per card** - Don't combine multiple ideas in a single card
 6. **Use AI assistants** - Generate decks quickly for any subject
 
 ---
