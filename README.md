@@ -1,278 +1,255 @@
-# Kioku - VSCode Flashcard Extension
+<div align="center">
 
+<img src="resources/icon.png" alt="Kioku Logo" width="120" />
+
+# Kioku (記憶)
+
+**A powerful flashcard learning extension for VSCode with spaced repetition**
+
+[![Version](https://img.shields.io/visual-studio-marketplace/v/Justhiro55.kioku?color=blue&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=Justhiro55.kioku)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/Justhiro55.kioku?color=success)](https://marketplace.visualstudio.com/items?itemName=Justhiro55.kioku)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/Justhiro55.kioku?color=yellow)](https://marketplace.visualstudio.com/items?itemName=Justhiro55.kioku)
 [![CI](https://github.com/Justhiro55/Kioku/actions/workflows/ci.yml/badge.svg)](https://github.com/Justhiro55/Kioku/actions/workflows/ci.yml)
-[![Release](https://github.com/Justhiro55/Kioku/actions/workflows/release.yml/badge.svg)](https://github.com/Justhiro55/Kioku/actions/workflows/release.yml)
-[![Version](https://img.shields.io/github/v/release/Justhiro55/Kioku)](https://github.com/Justhiro55/Kioku/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-🧠 A powerful flashcard learning extension for VSCode with spaced repetition.
+[Install from Marketplace](https://marketplace.visualstudio.com/items?itemName=Justhiro55.kioku) | [GitHub](https://github.com/Justhiro55/Kioku) | [Report Issue](https://github.com/Justhiro55/Kioku/issues)
 
-## Features
-
-### Core Learning
-- **📝 Quick Card Creation**: Select text in your editor and convert it to flashcards
-- **🔄 Spaced Repetition**: Built-in SM-2 algorithm for optimal learning
-- **✍️ Spell Mode**: Type answers to actively recall information
-- **🎨 Modern Review UI**: Beautiful webview-based review interface
-
-### Organization
-- **📁 Deck Management**: Create and organize multiple decks
-- **🏷️ Tags**: Categorize cards with tags
-- **🔍 Search**: Find cards by front, back, or tags
-- **🎯 Filtering**: Filter cards by tags or search query
-
-### Data Management
-- **💾 Flexible Storage**: Choose between globalState or SQLite
-- **📝 Markdown Import/Export**: Import decks from markdown files (engineer-friendly!)
-- **🌐 URL Import**: Import decks from GitHub Gist or any markdown URL
-- **📤 Easy Sharing**: Share decks via clipboard for Gist creation
-- **📊 CSV/JSON Support**: Share and backup your cards in multiple formats
-- **🔄 Easy Migration**: One-click migration to SQLite
-
-### Progress Tracking
-- **📈 Statistics Dashboard**: View your learning progress
-- **📅 Contribution Calendar**: GitHub-style calendar showing daily reviews
-- **🔥 Streak Tracking**: Track consecutive learning days
-- **📊 Accuracy Metrics**: Monitor your performance over time
-
-## Installation
-
-### From Source
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/Justhiro55/Kioku.git
-   cd Kioku
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Compile the extension:
-   ```bash
-   npm run compile
-   ```
-
-4. Press `F5` in VSCode to launch the Extension Development Host
-
-## Usage
-
-### Creating Cards
-
-#### From Markdown (Recommended for Engineers! 🚀)
-1. Create a `.md` file with your cards:
-   ```markdown
-   # JavaScript Basics
-
-   ## const
-   再代入不可の定数宣言
-   - Tags: es6, variable
-
-   ## let
-   ブロックスコープの変数宣言
-   - Tags: es6, variable
-   ```
-2. Open the file in VSCode
-3. Run `Kioku: Create Cards from Current Markdown File`
-4. Done! All cards imported automatically.
-
-See [example-deck.md](example-deck.md) for a complete example.
-
-#### From URL (Community Decks! 🌐)
-1. Get a Gist URL (e.g., from a friend or community)
-2. Run `Kioku: Import Deck from URL`
-3. Paste the URL
-4. Cards imported instantly!
-
-**Share your deck:**
-1. Run `Kioku: Share Deck (Copy to Clipboard)`
-2. Go to [gist.github.com](https://gist.github.com)
-3. Create new Gist, paste content
-4. Share the URL!
-
-#### From Selection
-1. Select text in any editor (format: `word - meaning`)
-2. Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
-3. Run `Kioku: Add from Selection`
-4. Enter front, back, and optional tags
-
-### Reviewing Cards
-
-1. Click **Start Review** button in Kioku sidebar (or use Command Palette)
-2. Press Space/Enter to reveal answer
-3. Rate using keyboard shortcuts:
-   - `1` - Again (forgot)
-   - `2` - Hard (difficult recall)
-   - `3` - Good (correct)
-   - `4` - Easy (instant recall)
-4. Press `Cmd+Z` (Mac) / `Ctrl+Z` (Windows) to undo last rating
-
-### Managing Decks
-
-- Click the Kioku icon in the Activity Bar
-- Click the + button to create a new deck
-- Right-click on decks to delete
-- Cards with 📌 are due for review
-
-### Viewing Statistics
-
-1. Open Command Palette
-2. Run `Kioku: Show Statistics`
-3. View your learning calendar, streak, and accuracy
-
-## Commands
-
-### Learning
-- `Kioku: Add from Selection` - Create card from selected text
-- `Kioku: Start Review` - Begin review session
-- `Kioku: Edit Card` - Edit an existing card
-- `Kioku: Delete Card` - Delete a card
-
-### Organization
-- `Kioku: Create Deck` - Create a new deck
-- `Kioku: Delete Deck` - Delete a deck
-- `Kioku: Search Cards` - Search across all cards
-- `Kioku: Filter by Tag` - Filter cards by tag
-- `Kioku: Clear Filters` - Remove all filters
-
-### Data
-- `Kioku: Import from Markdown` - Import deck from markdown file
-- `Kioku: Create Cards from Current Markdown File` - Quick import from open file
-- `Kioku: Export to Markdown` - Export deck to markdown
-- `Kioku: Import Deck from URL` - Import from GitHub Gist or markdown URL
-- `Kioku: Share Deck (Copy to Clipboard)` - Share deck for Gist creation
-- `Kioku: Export to CSV` - Export all cards
-- `Kioku: Import from CSV` - Import cards from CSV
-- `Kioku: Import from JSON` - Import cards from JSON
-- `Kioku: Export to JSON` - Export cards to JSON
-- `Kioku: Migrate to SQLite` - Migrate to SQLite storage
-
-### Analytics
-- `Kioku: Show Statistics` - View learning statistics
-
-## Settings
-
-- `kioku.useWebview` (default: `true`) - Use webview UI for reviews
-- `kioku.spellMode` (default: `true`) - Enable typing answers
-- `kioku.reviewAlgorithm` (default: `"sm2"`) - Algorithm: `"sm2"` or `"basic"`
-- `kioku.storageType` (default: `"globalState"`) - Storage: `"globalState"` or `"sqlite"`
-
-## Spaced Repetition (SM-2)
-
-Kioku uses the SuperMemo 2 (SM-2) algorithm:
-
-- **5 - Perfect ✨**: Instant recall
-- **4 - Good ✅**: Correct after brief thought
-- **3 - OK 👍**: Correct with difficulty
-- **2 - Hard 😓**: Incorrect but recognized
-- **1 - Again 🔄**: Barely recalled
-- **0 - Forgot ❌**: Complete blackout
-
-Cards are automatically scheduled based on your performance.
-
-## Development Status
-
-### Sprint 1 (MVP) ✅
-- [x] Card CRUD operations
-- [x] Add from selection
-- [x] Basic review mode
-- [x] TreeView sidebar
-- [x] Status bar
-- [x] SM-2 algorithm
-
-### Sprint 2 (Enhanced UX) ✅
-- [x] Webview-based review UI
-- [x] Card editing
-- [x] Deck management
-- [x] CSV import/export
-
-### Sprint 3 (Data & Search) ✅
-- [x] SQLite storage backend
-- [x] Tags and filtering
-- [x] Search functionality
-- [x] Migration tool
-
-### Sprint 4 (Analytics) ✅
-- [x] Review session tracking
-- [x] Contribution calendar
-- [x] Statistics dashboard
-- [x] Streak calculation
-
-### Sprint 5 (Markdown & Community Sharing) ✅
-- [x] Markdown import/export
-- [x] URL-based deck import (Gist support)
-- [x] Share deck to clipboard
-- [x] Undo functionality (Cmd+Z)
-- [x] Review start button in sidebar
-- [x] Enhanced streak visualization
-
-### Future Enhancements
-- [ ] GitHub OAuth for automatic Gist publishing
-- [ ] Media support (images, audio)
-- [ ] AI card generation
-- [ ] Gamification (XP, badges)
-
-## Architecture
-
-```
-src/
-├── extension.ts          # Main entry point
-├── types.ts             # Type definitions
-├── storage.ts           # GlobalState storage
-├── sqliteStorage.ts     # SQLite storage
-├── sm2.ts               # Spaced repetition algorithm
-├── statistics.ts        # Session tracking
-├── deckTreeProvider.ts  # Sidebar UI
-├── reviewWebview.ts     # Review UI
-├── statsWebview.ts      # Statistics UI
-├── csvHandler.ts        # Import/export
-├── filterManager.ts     # Filtering logic
-└── migration.ts         # Data migration
-```
-
-## Development
-
-### Prerequisites
-
-- Node.js 18.x or higher
-- VSCode 1.85.0 or higher
-
-### Build
-
-```bash
-npm run compile
-```
-
-### Watch Mode
-
-```bash
-npm run watch
-```
-
-### Lint
-
-```bash
-npm run lint
-```
-
-### Debug
-
-Press `F5` in VSCode to launch the extension in debug mode.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-MIT
-
-## Support
-
-If you find this extension helpful, please star the repository and share it with others!
+</div>
 
 ---
 
-Made with ❤️ for learners who code
+## 🌟 Why Kioku?
+
+Kioku (記憶 - Japanese for "memory") brings powerful flashcard learning directly into your VSCode workflow. Whether you're learning a new programming language, preparing for technical interviews, or studying TOEIC vocabulary, Kioku helps you remember what matters.
+
+**Perfect for developers who want to learn without leaving their editor.**
+
+## ✨ Features
+
+### 🏠 Beautiful Home Screen
+- Modern, intuitive interface with gradient design
+- GitHub-style contribution calendar showing your learning progress
+- Quick access to all your decks with visual card counts
+- One-click deck creation and import
+
+### 🎯 Smart Learning
+- **🧠 Spaced Repetition (SM-2)**: Scientifically proven algorithm for optimal retention
+- **⌨️ Keyboard-First**: Navigate everything with keyboard shortcuts
+- **🎨 Modern Review UI**: Beautiful, distraction-free review experience
+- **↩️ Undo System**: Made a mistake? Press `Cmd+Z` to undo your last rating
+- **📊 Completion Screen**: Celebrate your progress with detailed statistics after each session
+
+### 📚 Deck Management
+- **Multiple Decks**: Organize cards by topic, difficulty, or any way you like
+- **Quick Browse**: View all cards in a deck at a glance
+- **Instant Add**: Add new cards directly from the browse screen
+- **Smart Filtering**: See only cards that are due for review
+
+### 📥 Import & Export
+- **📝 Markdown Support**: Import decks from markdown files (perfect for developers!)
+- **🌐 URL Import**: Share and import decks via GitHub Gist or any markdown URL
+- **📋 One-Click Import**: Button on home screen for instant deck creation
+- **💾 Multiple Formats**: CSV, JSON, and Markdown export options
+- **📦 Templates Included**: TOEIC vocabulary, 基本情報技術者試験, and JLPT N5 Japanese
+
+### 📈 Progress Tracking
+- **📅 Contribution Calendar**: GitHub-style heatmap showing daily activity
+- **🔥 Streak System**: Track consecutive learning days with visual indicators
+- **📊 Detailed Statistics**: Cards reviewed, accuracy rate, and time spent
+- **🎯 Performance Insights**: See which decks need more attention
+
+### 🎮 Gamification
+- **✨ Animated Completion**: Beautiful celebration screen after each review
+- **🏆 Performance Badges**: Get feedback based on your accuracy (Perfect! Excellent! Good Work!)
+- **⏱️ Time Tracking**: See how long you've been learning
+
+## 🚀 Installation
+
+### From VS Code Marketplace (Recommended)
+
+1. Open VSCode
+2. Press `Cmd+Shift+X` (Mac) or `Ctrl+Shift+X` (Windows/Linux)
+3. Search for "**Kioku**"
+4. Click **Install**
+
+Or [**install directly from the marketplace →**](https://marketplace.visualstudio.com/items?itemName=Justhiro55.kioku)
+
+### From Source
+
+```bash
+git clone https://github.com/Justhiro55/Kioku.git
+cd Kioku
+npm install
+npm run compile
+# Press F5 in VSCode to launch
+```
+
+## 📖 Quick Start
+
+### 1. Open Kioku Home
+Click the **🧠 Kioku** icon in the Activity Bar, then click **Home** button.
+
+### 2. Import a Template Deck
+Click **"📥 Import Deck from Markdown"** and select a template:
+- `templates/toeic/golden-word.md` - TOEIC 600 level vocabulary (100 words)
+- `templates/kihon-joho/basic-terms.md` - 基本情報技術者試験 terms (100 terms)
+- `templates/japanese-learning/jlpt-n5-vocabulary.md` - Basic Japanese (150 words)
+
+### 3. Start Learning
+Click **"▶ Start Review"** on any deck and begin your learning journey!
+
+## 💡 Usage
+
+### Creating Cards
+
+#### From Markdown (Recommended for Developers! 🚀)
+
+Create a `.md` file:
+
+```markdown
+# JavaScript Basics
+
+## const
+A constant variable declaration that cannot be reassigned
+
+## let
+Block-scoped variable declaration
+
+## arrow function
+Concise function syntax: (x) => x * 2
+```
+
+Then run: `Kioku: Import from Markdown`
+
+#### From Home Screen
+1. Click **Home** in the Kioku sidebar
+2. Click **📥 Import Deck from Markdown**
+3. Select your markdown file
+4. Done! Cards appear instantly
+
+#### Quick Add
+1. Browse a deck
+2. Click **+ Add Card**
+3. Enter front and back
+4. Press `Cmd+Enter` to save
+
+### Reviewing Cards
+
+**Keyboard Shortcuts:**
+- `Space` / `Enter` - Show answer
+- `1` - Again (< 1 min)
+- `2` - Hard (< 10 min)
+- `3` - Good (1 day)
+- `4` - Easy (4 days)
+- `Cmd+Z` / `Ctrl+Z` - Undo last rating
+- `Cmd+Delete` / `Ctrl+Backspace` - Back to home
+
+**Rating Guide:**
+- **Again** 🔄: Completely forgot
+- **Hard** 😅: Struggled to recall
+- **Good** ✅: Recalled correctly
+- **Easy** ⚡: Instant recall
+
+### Managing Decks
+
+**From Home Screen:**
+- **📖 Browse**: View all cards in deck
+- **+ Add Card**: Quickly add new cards
+- **▶ Review**: Start reviewing (only shown if cards are due)
+
+**Keyboard Navigation:**
+- `Cmd+Delete` anywhere to return home
+- `Cmd+Enter` to save new cards
+
+## 🎨 Templates
+
+Kioku includes ready-to-use templates:
+
+### 🇬🇧 TOEIC Golden Words (600 Level)
+100 essential business vocabulary words in Japanese
+- Categories: Business, Office, Finance, Customer Service
+- Perfect for TOEIC test preparation
+
+### 💻 基本情報技術者試験
+100 key terms for the Fundamental IT Engineer Exam
+- Topics: Computer Architecture, Networking, Databases, Security
+- Complete with Japanese explanations
+
+### 🇯🇵 JLPT N5 Vocabulary
+150 basic Japanese words for beginners
+- Categories: Greetings, Numbers, Family, Time, Food, Places
+- With romaji and English translations
+
+## ⚙️ Settings
+
+Access via `Preferences > Settings > Kioku`
+
+- `kioku.useWebview` - Use modern webview UI for reviews (default: `true`)
+- `kioku.reviewAlgorithm` - Choose algorithm: `"sm2"` or `"basic"` (default: `"sm2"`)
+- `kioku.storageType` - Storage backend: `"globalState"` or `"sqlite"` (default: `"globalState"`)
+
+## 🎯 Commands
+
+Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and type:
+
+### Learning
+- `Kioku: Show Home` - Open home screen
+- `Kioku: Start Review` - Begin review session
+- `Kioku: Add from Selection` - Create card from selected text
+
+### Organization
+- `Kioku: New Deck` - Create a new deck
+- `Kioku: Delete Deck` - Delete a deck
+- `Kioku: Browse Cards` - View cards in a deck
+
+### Import/Export
+- `Kioku: Import from Markdown` - Import deck from file
+- `Kioku: Create Cards from Current Markdown File` - Quick import
+- `Kioku: Export to Markdown` - Export deck
+- `Kioku: Import Deck from URL` - Import from Gist or URL
+- `Kioku: Share Deck` - Copy deck to clipboard for sharing
+
+### Analytics
+- `Kioku: Show Statistics` - View detailed learning statistics
+
+## 🔬 Technology
+
+**Spaced Repetition Algorithm (SM-2):**
+Kioku uses the SuperMemo 2 algorithm, which automatically schedules card reviews based on your performance:
+- Cards you know well appear less frequently
+- Difficult cards appear more often
+- Optimal spacing for long-term retention
+
+**Storage Options:**
+- **GlobalState** (default): Lightweight, built into VSCode
+- **SQLite**: For large decks with advanced querying
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. ⭐ Star the repository
+2. 🐛 [Report bugs](https://github.com/Justhiro55/Kioku/issues)
+3. 💡 [Suggest features](https://github.com/Justhiro55/Kioku/issues)
+4. 🔧 Submit pull requests
+
+## 📄 License
+
+MIT © [Justhiro55](https://github.com/Justhiro55)
+
+## 🙏 Support
+
+If you find Kioku helpful:
+- ⭐ [Star the repository](https://github.com/Justhiro55/Kioku)
+- 📝 [Write a review](https://marketplace.visualstudio.com/items?itemName=Justhiro55.kioku&ssr=false#review-details)
+- 🐦 Share it with your friends!
+
+---
+
+<div align="center">
+
+**Made with ❤️ for developers who never stop learning**
+
+[Install Now](https://marketplace.visualstudio.com/items?itemName=Justhiro55.kioku) | [Documentation](https://github.com/Justhiro55/Kioku#readme) | [Report Issue](https://github.com/Justhiro55/Kioku/issues)
+
+</div>
