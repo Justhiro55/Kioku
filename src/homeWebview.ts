@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { StorageManager } from './storage';
 import { SM2Algorithm } from './sm2';
 import { StatisticsManager } from './statistics';
+import { Card } from './types';
+import { v4 as uuidv4 } from 'uuid';
 
 export class HomeWebviewProvider {
   private panel: vscode.WebviewPanel | undefined;
@@ -50,7 +52,77 @@ export class HomeWebviewProvider {
       if (this.onShowStats) {
         this.onShowStats();
       }
+    } else if (message.command === 'viewDeck') {
+      await this.showDeckBrowser(message.deckId);
+    } else if (message.command === 'addCard') {
+      await this.showAddCard(message.deckId);
+    } else if (message.command === 'closeModal') {
+      await this.updateWebview();
+    } else if (message.command === 'deleteCard') {
+      await this.deleteCard(message.cardId);
+      await this.showDeckBrowser(message.deckId);
+    } else if (message.command === 'saveNewCard') {
+      await this.saveNewCard(message.deckId, message.front, message.back);
+      await this.showDeckBrowser(message.deckId);
     }
+  }
+
+  private async showDeckBrowser(deckId: string) {
+    if (!this.panel) {
+      return;
+    }
+
+    const deck = (await this.storage.getDecks()).find(d => d.id === deckId);
+    if (!deck) {
+      return;
+    }
+
+    const cards = await this.storage.getCardsByDeck(deckId);
+    this.panel.webview.html = this.getDeckBrowserContent(deck, cards);
+  }
+
+  private async showAddCard(deckId: string) {
+    if (!this.panel) {
+      return;
+    }
+
+    const deck = (await this.storage.getDecks()).find(d => d.id === deckId);
+    if (!deck) {
+      return;
+    }
+
+    this.panel.webview.html = this.getAddCardContent(deck);
+  }
+
+  private async deleteCard(cardId: string) {
+    await this.storage.deleteCard(cardId);
+  }
+
+  private async saveNewCard(deckId: string, front: string, back: string) {
+    const newCard: Card = {
+      id: uuidv4(),
+      front,
+      back,
+      tags: [],
+      deckId: deckId,
+      created_at: new Date().toISOString(),
+      due_at: new Date().toISOString(),
+      interval: 0,
+      reps: 0,
+      ease: 2.5
+    };
+
+    // Add card to deck
+    const deck = (await this.storage.getDecks()).find(d => d.id === deckId);
+    if (deck) {
+      deck.card_ids.push(newCard.id);
+      await this.storage.saveDeck(deck);
+    }
+
+    // Save card
+    const allCards = await this.storage.getCards();
+    allCards.push(newCard);
+    await this.context.globalState.update('cards', allCards);
   }
 
   private async updateWebview() {
@@ -266,6 +338,7 @@ export class HomeWebviewProvider {
       justify-content: space-between;
       font-size: 14px;
       color: var(--vscode-descriptionForeground);
+      margin-bottom: 15px;
     }
 
     .deck-due {
@@ -276,6 +349,34 @@ export class HomeWebviewProvider {
     .deck-done {
       color: #28a745;
       font-weight: bold;
+    }
+
+    .deck-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .deck-action-btn {
+      flex: 1;
+      padding: 8px;
+      font-size: 12px;
+      border: 1px solid var(--vscode-input-border);
+      background: var(--vscode-button-secondaryBackground);
+      color: var(--vscode-button-secondaryForeground);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .deck-action-btn:hover {
+      background: var(--vscode-button-secondaryHoverBackground);
+      transform: scale(1.05);
+    }
+
+    .deck-card {
+      display: flex;
+      flex-direction: column;
     }
 
     .empty-state {
@@ -462,7 +563,7 @@ export class HomeWebviewProvider {
       <h2 class="section-title">Your Decks</h2>
       <div class="deck-grid">
         ${deckStats.map(deck => `
-          <div class="deck-card ${deck.dueCards === 0 ? 'no-due' : ''}" onclick="startReview('${deck.id}')">
+          <div class="deck-card ${deck.dueCards === 0 ? 'no-due' : ''}">
             <div class="deck-icon">${deck.dueCards > 0 ? '📖' : '✅'}</div>
             <div class="deck-name">${this.escapeHtml(deck.name)}</div>
             <div class="deck-stats">
@@ -471,6 +572,19 @@ export class HomeWebviewProvider {
                 ? `<span class="deck-due">${deck.dueCards} due</span>`
                 : `<span class="deck-done">All done!</span>`
               }
+            </div>
+            <div class="deck-actions">
+              <button class="deck-action-btn" onclick="viewDeck('${deck.id}'); event.stopPropagation();">
+                👁️ View
+              </button>
+              <button class="deck-action-btn" onclick="addCard('${deck.id}'); event.stopPropagation();">
+                ➕ Add
+              </button>
+              ${deck.dueCards > 0 ? `
+                <button class="deck-action-btn" onclick="startReview('${deck.id}'); event.stopPropagation();" style="background: var(--vscode-button-background); color: var(--vscode-button-foreground);">
+                  ▶️ Review
+                </button>
+              ` : ''}
             </div>
           </div>
         `).join('')}
@@ -540,6 +654,20 @@ export class HomeWebviewProvider {
     function showStats() {
       vscode.postMessage({
         command: 'showStats'
+      });
+    }
+
+    function viewDeck(deckId) {
+      vscode.postMessage({
+        command: 'viewDeck',
+        deckId: deckId
+      });
+    }
+
+    function addCard(deckId) {
+      vscode.postMessage({
+        command: 'addCard',
+        deckId: deckId
       });
     }
   </script>
@@ -619,6 +747,377 @@ export class HomeWebviewProvider {
     if (ratio >= 0.5) {return 3;}
     if (ratio >= 0.25) {return 2;}
     return 1;
+  }
+
+  private getDeckBrowserContent(deck: any, cards: any[]): string {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse ${this.escapeHtml(deck.name)}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--vscode-font-family);
+      color: var(--vscode-foreground);
+      background: var(--vscode-editor-background);
+      padding: 30px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .title-section h1 {
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: var(--vscode-descriptionForeground);
+      font-size: 14px;
+    }
+
+    .back-btn {
+      padding: 10px 20px;
+      background: var(--vscode-button-secondaryBackground);
+      color: var(--vscode-button-secondaryForeground);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: var(--vscode-button-secondaryHoverBackground);
+    }
+
+    .cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .card-item {
+      background: var(--vscode-input-background);
+      border: 2px solid var(--vscode-input-border);
+      border-radius: 8px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+    .card-item:hover {
+      border-color: var(--vscode-button-background);
+      transform: translateX(5px);
+    }
+
+    .card-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .card-front {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .card-back {
+      color: var(--vscode-descriptionForeground);
+      font-size: 14px;
+    }
+
+    .delete-btn {
+      padding: 8px 16px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
+      transform: scale(1.05);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--vscode-descriptionForeground);
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title-section">
+      <h1>📖 ${this.escapeHtml(deck.name)}</h1>
+      <p class="subtitle">${cards.length} cards</p>
+    </div>
+    <button class="back-btn" onclick="closeModal()">← Back to Home</button>
+  </div>
+
+  ${cards.length > 0 ? `
+    <div class="cards-list">
+      ${cards.map(card => `
+        <div class="card-item">
+          <div class="card-content">
+            <div class="card-front">${this.escapeHtml(card.front)}</div>
+            <div class="card-back">${this.escapeHtml(card.back)}</div>
+            <button class="delete-btn" onclick="deleteCard('${card.id}', '${deck.id}')">🗑️ Delete</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  ` : `
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <p>No cards in this deck yet</p>
+    </div>
+  `}
+
+  <script>
+    const vscode = acquireVsCodeApi();
+
+    function closeModal() {
+      vscode.postMessage({ command: 'closeModal' });
+    }
+
+    function deleteCard(cardId, deckId) {
+      if (confirm('Delete this card?')) {
+        vscode.postMessage({
+          command: 'deleteCard',
+          cardId: cardId,
+          deckId: deckId
+        });
+      }
+    }
+  </script>
+</body>
+</html>`;
+  }
+
+  private getAddCardContent(deck: any): string {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Card to ${this.escapeHtml(deck.name)}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--vscode-font-family);
+      color: var(--vscode-foreground);
+      background: var(--vscode-editor-background);
+      padding: 30px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .title-section h1 {
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: var(--vscode-descriptionForeground);
+      font-size: 14px;
+    }
+
+    .back-btn {
+      padding: 10px 20px;
+      background: var(--vscode-button-secondaryBackground);
+      color: var(--vscode-button-secondaryForeground);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: var(--vscode-button-secondaryHoverBackground);
+    }
+
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 15px;
+      background: var(--vscode-input-background);
+      color: var(--vscode-input-foreground);
+      border: 2px solid var(--vscode-input-border);
+      border-radius: 6px;
+      font-family: var(--vscode-font-family);
+      font-size: 16px;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--vscode-focusBorder);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .save-btn {
+      flex: 1;
+      padding: 15px;
+      background: var(--vscode-button-background);
+      color: var(--vscode-button-foreground);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .save-btn:hover {
+      background: var(--vscode-button-hoverBackground);
+      transform: translateY(-2px);
+    }
+
+    .save-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .cancel-btn {
+      padding: 15px 30px;
+      background: var(--vscode-button-secondaryBackground);
+      color: var(--vscode-button-secondaryForeground);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .cancel-btn:hover {
+      background: var(--vscode-button-secondaryHoverBackground);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title-section">
+      <h1>➕ Add New Card</h1>
+      <p class="subtitle">to ${this.escapeHtml(deck.name)}</p>
+    </div>
+    <button class="back-btn" onclick="closeModal()">← Back to Home</button>
+  </div>
+
+  <div class="form-container">
+    <div class="form-group">
+      <label for="front">Front (Question)</label>
+      <textarea id="front" placeholder="Enter the question or term..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="back">Back (Answer)</label>
+      <textarea id="back" placeholder="Enter the answer or definition..."></textarea>
+    </div>
+
+    <div class="button-group">
+      <button class="save-btn" onclick="saveCard()" id="saveBtn" disabled>💾 Save Card</button>
+      <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const vscode = acquireVsCodeApi();
+    const frontInput = document.getElementById('front');
+    const backInput = document.getElementById('back');
+    const saveBtn = document.getElementById('saveBtn');
+
+    function validateInputs() {
+      const hasContent = frontInput.value.trim() && backInput.value.trim();
+      saveBtn.disabled = !hasContent;
+    }
+
+    frontInput.addEventListener('input', validateInputs);
+    backInput.addEventListener('input', validateInputs);
+
+    // Focus first input
+    frontInput.focus();
+
+    function closeModal() {
+      vscode.postMessage({ command: 'closeModal' });
+    }
+
+    function saveCard() {
+      const front = frontInput.value.trim();
+      const back = backInput.value.trim();
+
+      if (front && back) {
+        vscode.postMessage({
+          command: 'saveNewCard',
+          deckId: '${deck.id}',
+          front: front,
+          back: back
+        });
+      }
+    }
+
+    // Submit on Ctrl/Cmd + Enter
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        if (!saveBtn.disabled) {
+          saveCard();
+        }
+      }
+    });
+  </script>
+</body>
+</html>`;
   }
 
   private escapeHtml(text: string): string {
