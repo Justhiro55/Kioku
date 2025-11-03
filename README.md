@@ -22,8 +22,6 @@
 
 Kioku (記憶 - "memory" in Japanese) is a flashcard learning extension that integrates spaced repetition directly into VSCode. Learn programming languages, prepare for interviews, study foreign languages—all without leaving your editor.
 
-![Kioku Home Screen](resources/screen_shot_home.png)
-
 **Features:**
 - 🧠 Spaced Repetition (SM-2 algorithm) for optimal retention
 - 📝 Markdown-based card creation (perfect for developers)
@@ -39,12 +37,20 @@ Kioku (記憶 - "memory" in Japanese) is a flashcard learning extension that int
 - Quick access to all your decks with visual card counts
 - One-click deck creation and import
 
+<div align="center">
+<img src="resources/home_screen.png" alt="Home Screen" width="600" />
+</div>
+
 ### 🎯 Smart Learning
 - **🧠 Spaced Repetition (SM-2)**: Scientifically proven algorithm for optimal retention
 - **⌨️ Keyboard-First**: Navigate everything with keyboard shortcuts
 - **🎨 Modern Review UI**: Beautiful, distraction-free review experience
 - **↩️ Undo System**: Made a mistake? Press `Cmd+Z` to undo your last rating
 - **📊 Completion Screen**: Celebrate your progress with detailed statistics after each session
+
+<div align="center">
+<img src="resources/review_screen.png" alt="Review Screen" width="600" />
+</div>
 
 ### 📚 Deck Management
 - **Multiple Decks**: Organize cards by topic, difficulty, or any way you like
