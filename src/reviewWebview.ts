@@ -84,6 +84,20 @@ export class ReviewWebviewProvider {
       case 'undo':
         await this.undoLastReview();
         break;
+
+      case 'close':
+        if (this.panel) {
+          this.panel.dispose();
+        }
+        this.onComplete();
+        break;
+
+      case 'backToHome':
+        if (this.panel) {
+          this.panel.dispose();
+        }
+        this.onComplete();
+        break;
     }
   }
 
@@ -156,15 +170,272 @@ export class ReviewWebviewProvider {
       duration_seconds: durationSeconds
     });
 
-    if (this.panel) {
-      this.panel.dispose();
+    // Show completion screen instead of closing
+    const accuracy = Math.round((this.correctCount / this.cards.length) * 100);
+    this.showCompletionScreen(this.cards.length, this.correctCount, accuracy, durationSeconds);
+  }
+
+  private showCompletionScreen(totalCards: number, correctCards: number, accuracy: number, durationSeconds: number) {
+    if (!this.panel) {
+      return;
     }
 
-    const accuracy = Math.round((this.correctCount / this.cards.length) * 100);
-    vscode.window.showInformationMessage(
-      `Review completed! ${this.cards.length} cards, ${accuracy}% accuracy 🎉`
-    );
-    this.onComplete();
+    const minutes = Math.floor(durationSeconds / 60);
+    const seconds = durationSeconds % 60;
+    const timeString = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+
+    this.panel.webview.html = this.getCompletionContent(totalCards, correctCards, accuracy, timeString);
+  }
+
+  private getCompletionContent(totalCards: number, correctCards: number, accuracy: number, timeString: string): string {
+    let emoji = '🎉';
+    let title = 'Great Job!';
+    let message = 'Keep up the good work!';
+
+    if (accuracy === 100) {
+      emoji = '🌟';
+      title = 'Perfect!';
+      message = 'You got every card right!';
+    } else if (accuracy >= 80) {
+      emoji = '🎉';
+      title = 'Excellent!';
+      message = 'Outstanding performance!';
+    } else if (accuracy >= 60) {
+      emoji = '👍';
+      title = 'Good Work!';
+      message = 'You\'re making progress!';
+    } else {
+      emoji = '💪';
+      title = 'Keep Practicing!';
+      message = 'Every review makes you stronger!';
+    }
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Complete</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--vscode-font-family);
+      color: var(--vscode-foreground);
+      background: var(--vscode-editor-background);
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .completion-container {
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .emoji {
+      font-size: 96px;
+      margin-bottom: 20px;
+      animation: bounce 0.6s ease;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .message {
+      font-size: 20px;
+      color: var(--vscode-descriptionForeground);
+      margin-bottom: 40px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: var(--vscode-input-background);
+      border: 2px solid var(--vscode-input-border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: #667eea;
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--vscode-descriptionForeground);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .accuracy-circle {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 40px;
+      position: relative;
+    }
+
+    .circle-bg {
+      fill: none;
+      stroke: var(--vscode-input-border);
+      stroke-width: 12;
+    }
+
+    .circle-progress {
+      fill: none;
+      stroke: url(#gradient);
+      stroke-width: 12;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      stroke-dasharray: ${2 * Math.PI * 60};
+      stroke-dashoffset: ${2 * Math.PI * 60 * (1 - accuracy / 100)};
+      animation: fillCircle 1s ease-out;
+    }
+
+    @keyframes fillCircle {
+      from {
+        stroke-dashoffset: ${2 * Math.PI * 60};
+      }
+    }
+
+    .circle-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 18px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .secondary-btn {
+      background: var(--vscode-button-secondaryBackground);
+      color: var(--vscode-button-secondaryForeground);
+    }
+
+    .secondary-btn:hover {
+      background: var(--vscode-button-secondaryHoverBackground);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="completion-container">
+    <div class="emoji">${emoji}</div>
+    <h1>${title}</h1>
+    <p class="message">${message}</p>
+
+    <div class="accuracy-circle">
+      <svg width="150" height="150">
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <circle class="circle-bg" cx="75" cy="75" r="60"></circle>
+        <circle class="circle-progress" cx="75" cy="75" r="60"></circle>
+      </svg>
+      <div class="circle-text">${accuracy}%</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">${totalCards}</div>
+        <div class="stat-label">Cards</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${correctCards}</div>
+        <div class="stat-label">Correct</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${timeString}</div>
+        <div class="stat-label">Time</div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="secondary-btn" onclick="close()">Close</button>
+      <button class="primary-btn" onclick="backToHome()">Back to Home</button>
+    </div>
+  </div>
+
+  <script>
+    const vscode = acquireVsCodeApi();
+
+    function close() {
+      vscode.postMessage({ command: 'close' });
+    }
+
+    function backToHome() {
+      vscode.postMessage({ command: 'backToHome' });
+    }
+  </script>
+</body>
+</html>`;
   }
 
   private updateWebview() {

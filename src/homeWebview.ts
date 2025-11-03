@@ -13,7 +13,8 @@ export class HomeWebviewProvider {
     private context: vscode.ExtensionContext,
     private storage: StorageManager,
     private onStartReview: (deckId?: string) => void,
-    private onShowStats?: () => void
+    private onShowStats?: () => void,
+    private onImportDeck?: () => void
   ) {
     this.statisticsManager = new StatisticsManager(context);
   }
@@ -51,6 +52,10 @@ export class HomeWebviewProvider {
     } else if (message.command === 'showStats') {
       if (this.onShowStats) {
         this.onShowStats();
+      }
+    } else if (message.command === 'importDeck') {
+      if (this.onImportDeck) {
+        this.onImportDeck();
       }
     } else if (message.command === 'viewDeck') {
       await this.showDeckBrowser(message.deckId);
@@ -189,6 +194,38 @@ export class HomeWebviewProvider {
     .subtitle {
       font-size: 18px;
       color: var(--vscode-descriptionForeground);
+    }
+
+    .import-section {
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    .import-btn {
+      width: 100%;
+      padding: 16px 24px;
+      background: var(--vscode-input-background);
+      border: 2px dashed var(--vscode-input-border);
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--vscode-foreground);
+      transition: all 0.3s;
+    }
+
+    .import-btn:hover {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .import-icon {
+      font-size: 24px;
     }
 
     .all-decks-button {
@@ -574,6 +611,13 @@ export class HomeWebviewProvider {
     <p class="subtitle">Your flashcard learning companion</p>
   </div>
 
+  <div class="import-section">
+    <button class="import-btn" onclick="importDeck()">
+      <span class="import-icon">📥</span>
+      <span>Import Deck from Markdown</span>
+    </button>
+  </div>
+
   ${totalDue > 0 ? `
     <button class="all-decks-button" onclick="startReview(null)">
       <div class="all-decks-content">
@@ -696,6 +740,12 @@ export class HomeWebviewProvider {
       vscode.postMessage({
         command: 'addCard',
         deckId: deckId
+      });
+    }
+
+    function importDeck() {
+      vscode.postMessage({
+        command: 'importDeck'
       });
     }
   </script>
@@ -830,6 +880,24 @@ export class HomeWebviewProvider {
       background: var(--vscode-button-secondaryHoverBackground);
     }
 
+    .add-card-btn {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    }
+
+    .add-card-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+    }
+
     .cards-list {
       display: flex;
       flex-direction: column;
@@ -900,7 +968,10 @@ export class HomeWebviewProvider {
       <h1>📖 ${this.escapeHtml(deck.name)}</h1>
       <p class="subtitle">${cards.length} cards</p>
     </div>
-    <button class="back-btn" onclick="closeModal()">← Back to Home</button>
+    <div style="display: flex; gap: 10px;">
+      <button class="add-card-btn" onclick="addNewCard('${deck.id}')">+ Add Card</button>
+      <button class="back-btn" onclick="closeModal()">← Back to Home</button>
+    </div>
   </div>
 
   ${cards.length > 0 ? `
@@ -927,6 +998,13 @@ export class HomeWebviewProvider {
 
     function closeModal() {
       vscode.postMessage({ command: 'closeModal' });
+    }
+
+    function addNewCard(deckId) {
+      vscode.postMessage({
+        command: 'addCard',
+        deckId: deckId
+      });
     }
 
     function deleteCard(cardId, deckId) {

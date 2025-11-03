@@ -132,6 +132,16 @@ async function showHome() {
     },
     () => {
       showStats();
+    },
+    async () => {
+      const result = await MarkdownHandler.importFromMarkdown(storage);
+      if (result) {
+        vscode.window.showInformationMessage(
+          `Imported ${result.cardsCount} cards to deck "${result.deckName}"`
+        );
+        deckTreeProvider.refresh();
+        updateStatusBar();
+      }
     }
   );
   await homeWebview.show();
