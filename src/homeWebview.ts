@@ -1016,6 +1016,14 @@ export class HomeWebviewProvider {
         });
       }
     }
+
+    // Cmd+Delete or Ctrl+Backspace to go back to home
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'Backspace' || e.key === 'Delete')) {
+        e.preventDefault();
+        closeModal();
+      }
+    });
   </script>
 </body>
 </html>`;
@@ -1301,6 +1309,11 @@ export class HomeWebviewProvider {
         if (!saveBtn.disabled) {
           saveCard();
         }
+      }
+      // Cmd+Delete or Ctrl+Backspace to go back to home
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'Backspace' || e.key === 'Delete')) {
+        e.preventDefault();
+        closeModal();
       }
     });
   </script>
