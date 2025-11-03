@@ -290,10 +290,11 @@ export class HomeWebviewProvider {
       border: 2px solid var(--vscode-input-border);
       border-radius: 12px;
       padding: 24px;
-      cursor: pointer;
       transition: all 0.3s;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     .deck-card::before {
@@ -319,7 +320,7 @@ export class HomeWebviewProvider {
     }
 
     .deck-card.no-due {
-      opacity: 0.6;
+      opacity: 0.8;
     }
 
     .deck-icon {
@@ -352,31 +353,58 @@ export class HomeWebviewProvider {
     }
 
     .deck-actions {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
       margin-top: auto;
     }
 
     .deck-action-btn {
-      flex: 1;
-      padding: 8px;
-      font-size: 12px;
-      border: 1px solid var(--vscode-input-border);
-      background: var(--vscode-button-secondaryBackground);
-      color: var(--vscode-button-secondaryForeground);
-      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s;
-    }
-
-    .deck-action-btn:hover {
-      background: var(--vscode-button-secondaryHoverBackground);
-      transform: scale(1.05);
-    }
-
-    .deck-card {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .deck-action-btn.view {
+      background: rgba(102, 126, 234, 0.15);
+      color: #667eea;
+    }
+
+    .deck-action-btn.view:hover {
+      background: rgba(102, 126, 234, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .deck-action-btn.add {
+      background: rgba(40, 167, 69, 0.15);
+      color: #28a745;
+    }
+
+    .deck-action-btn.add:hover {
+      background: rgba(40, 167, 69, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .deck-action-btn.review {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 600;
+      padding: 12px;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .deck-action-btn.review:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
     }
 
     .empty-state {
@@ -574,17 +602,17 @@ export class HomeWebviewProvider {
               }
             </div>
             <div class="deck-actions">
-              <button class="deck-action-btn" onclick="viewDeck('${deck.id}'); event.stopPropagation();">
-                👁️ View
-              </button>
-              <button class="deck-action-btn" onclick="addCard('${deck.id}'); event.stopPropagation();">
-                ➕ Add
-              </button>
               ${deck.dueCards > 0 ? `
-                <button class="deck-action-btn" onclick="startReview('${deck.id}'); event.stopPropagation();" style="background: var(--vscode-button-background); color: var(--vscode-button-foreground);">
-                  ▶️ Review
+                <button class="deck-action-btn review" onclick="startReview('${deck.id}'); event.stopPropagation();">
+                  <span>▶</span> Start Review
                 </button>
               ` : ''}
+              <button class="deck-action-btn view" onclick="viewDeck('${deck.id}'); event.stopPropagation();">
+                <span>📖</span> Browse
+              </button>
+              <button class="deck-action-btn add" onclick="addCard('${deck.id}'); event.stopPropagation();">
+                <span>+</span> Add Card
+              </button>
             </div>
           </div>
         `).join('')}
