@@ -18,7 +18,8 @@ export class ReviewWebviewProvider {
     private context: vscode.ExtensionContext,
     private storage: StorageManager,
     private onComplete: () => void,
-    private deckId?: string
+    private deckId?: string,
+    private onBackToHome?: () => void
   ) {
     this.statisticsManager = new StatisticsManager(context);
   }
@@ -96,7 +97,11 @@ export class ReviewWebviewProvider {
         if (this.panel) {
           this.panel.dispose();
         }
-        this.onComplete();
+        if (this.onBackToHome) {
+          this.onBackToHome();
+        } else {
+          this.onComplete();
+        }
         break;
     }
   }

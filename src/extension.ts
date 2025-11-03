@@ -304,11 +304,19 @@ async function startReview(deckId?: string) {
     const webviewProvider = new ReviewWebviewProvider(
       context,
       storage,
-      () => {
+      async () => {
         deckTreeProvider.refresh();
         updateStatusBar();
+        // Refresh home screen if it's open
+        if (currentHomeWebview) {
+          await currentHomeWebview.refresh();
+        }
       },
-      deckId
+      deckId,
+      async () => {
+        // Back to Home button pressed
+        await showHome();
+      }
     );
     await webviewProvider.show();
   } else {
