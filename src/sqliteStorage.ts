@@ -5,6 +5,26 @@ import Database from 'better-sqlite3';
 import { Card, Deck } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
+interface CardRow {
+  id: string;
+  front: string;
+  back: string;
+  tags: string;
+  created_at: string;
+  due_at: string;
+  interval: number;
+  reps: number;
+  ease: number;
+  deck_id: string;
+  image?: string;
+}
+
+interface DeckRow {
+  id: string;
+  name: string;
+  created_at: string;
+}
+
 /**
  * SQLite storage implementation
  */
@@ -66,17 +86,17 @@ export class SQLiteStorage {
   // ===== Card Operations =====
 
   async getCards(): Promise<Card[]> {
-    const rows = this.db.prepare('SELECT * FROM cards').all() as any[];
+    const rows = this.db.prepare('SELECT * FROM cards').all() as CardRow[];
     return rows.map(row => this.rowToCard(row));
   }
 
   async getCard(id: string): Promise<Card | undefined> {
-    const row = this.db.prepare('SELECT * FROM cards WHERE id = ?').get(id) as any;
+    const row = this.db.prepare('SELECT * FROM cards WHERE id = ?').get(id) as CardRow | undefined;
     return row ? this.rowToCard(row) : undefined;
   }
 
   async getCardsByDeck(deckId: string): Promise<Card[]> {
-    const rows = this.db.prepare('SELECT * FROM cards WHERE deck_id = ?').all(deckId) as any[];
+    const rows = this.db.prepare('SELECT * FROM cards WHERE deck_id = ?').all(deckId) as CardRow[];
     return rows.map(row => this.rowToCard(row));
   }
 
@@ -154,7 +174,7 @@ export class SQLiteStorage {
   // ===== Deck Operations =====
 
   async getDecks(): Promise<Deck[]> {
-    const rows = this.db.prepare('SELECT * FROM decks').all() as any[];
+    const rows = this.db.prepare('SELECT * FROM decks').all() as DeckRow[];
     return Promise.all(rows.map(async row => {
       const cardIds = await this.getCardIdsByDeck(row.id);
       return {
@@ -167,7 +187,7 @@ export class SQLiteStorage {
   }
 
   async getDeck(id: string): Promise<Deck | undefined> {
-    const row = this.db.prepare('SELECT * FROM decks WHERE id = ?').get(id) as any;
+    const row = this.db.prepare('SELECT * FROM decks WHERE id = ?').get(id) as DeckRow | undefined;
     if (!row) {
       return undefined;
     }
@@ -226,7 +246,7 @@ export class SQLiteStorage {
 
   // ===== Helper Methods =====
 
-  private rowToCard(row: any): Card {
+  private rowToCard(row: CardRow): Card {
     return {
       id: row.id,
       front: row.front,

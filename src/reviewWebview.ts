@@ -4,6 +4,11 @@ import { StorageManager } from './storage';
 import { SM2Algorithm } from './sm2';
 import { StatisticsManager } from './statistics';
 
+interface ReviewMessage {
+  command: string;
+  quality?: number;
+}
+
 export class ReviewWebviewProvider {
   private panel: vscode.WebviewPanel | undefined;
   private cards: Card[] = [];
@@ -67,7 +72,7 @@ export class ReviewWebviewProvider {
     this.updateWebview();
   }
 
-  private async handleMessage(message: any) {
+  private async handleMessage(message: ReviewMessage) {
     switch (message.command) {
       case 'showAnswer':
         this.showingAnswer = true;

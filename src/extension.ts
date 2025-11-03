@@ -20,7 +20,7 @@ let filterManager: FilterManager;
 let statisticsManager: StatisticsManager;
 let statusBarItem: vscode.StatusBarItem;
 let context: vscode.ExtensionContext;
-let currentHomeWebview: any = null;
+let currentHomeWebview: HomeWebviewProvider | null = null;
 
 export function activate(ctx: vscode.ExtensionContext) {
   console.log('Kioku extension is now active');

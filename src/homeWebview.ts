@@ -2,8 +2,35 @@ import * as vscode from 'vscode';
 import { StorageManager } from './storage';
 import { SM2Algorithm } from './sm2';
 import { StatisticsManager } from './statistics';
-import { Card } from './types';
+import { Card, Deck } from './types';
 import { v4 as uuidv4 } from 'uuid';
+
+interface WebviewMessage {
+  command: string;
+  deckId?: string;
+  cardId?: string;
+  front?: string;
+  back?: string;
+  tags?: string;
+}
+
+interface DeckStat {
+  id: string;
+  name: string;
+  total: number;
+  due: number;
+}
+
+interface RecentStat {
+  date: string;
+  count: number;
+}
+
+interface Stats {
+  total_cards: number;
+  total_reviews: number;
+  streak_days: number;
+}
 
 export class HomeWebviewProvider {
   private panel: vscode.WebviewPanel | undefined;
@@ -49,7 +76,7 @@ export class HomeWebviewProvider {
     }
   }
 
-  private async handleMessage(message: any) {
+  private async handleMessage(message: WebviewMessage) {
     if (message.command === 'startReview') {
       this.onStartReview(message.deckId);
       if (this.panel) {
@@ -169,7 +196,7 @@ export class HomeWebviewProvider {
     this.panel.webview.html = this.getWebviewContent(deckStats, totalDue, recentStats, stats);
   }
 
-  private getWebviewContent(deckStats: any[], totalDue: number, recentStats: any[], stats: any): string {
+  private getWebviewContent(deckStats: DeckStat[], totalDue: number, recentStats: RecentStat[], stats: Stats): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -836,7 +863,7 @@ export class HomeWebviewProvider {
     return 1;
   }
 
-  private getDeckBrowserContent(deck: any, cards: any[]): string {
+  private getDeckBrowserContent(deck: Deck, cards: Card[]): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1038,7 +1065,7 @@ export class HomeWebviewProvider {
 </html>`;
   }
 
-  private getAddCardContent(deck: any): string {
+  private getAddCardContent(deck: Deck): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
