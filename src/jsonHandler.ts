@@ -74,8 +74,9 @@ export async function importFromJSON(storage: StorageManager): Promise<void> {
     vscode.window.showInformationMessage(
       `Imported ${importCount} cards from JSON`
     );
-  } catch (error: any) {
-    vscode.window.showErrorMessage(`Failed to import JSON: ${error.message}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    vscode.window.showErrorMessage(`Failed to import JSON: ${message}`);
   }
 }
 
@@ -142,8 +143,9 @@ export async function createFromJSONFile(storage: StorageManager): Promise<void>
     vscode.window.showInformationMessage(
       `Created ${validCards.length} cards`
     );
-  } catch (error: any) {
-    vscode.window.showErrorMessage(`Failed to parse JSON: ${error.message}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    vscode.window.showErrorMessage(`Failed to parse JSON: ${message}`);
   }
 }
 

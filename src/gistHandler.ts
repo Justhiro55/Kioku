@@ -1,11 +1,16 @@
 import * as vscode from 'vscode';
+import * as https from 'https';
+import * as http from 'http';
 import { MarkdownHandler } from './markdownHandler';
+import { StorageManager } from './storage';
+import { SQLiteStorage } from './sqliteStorage';
+import { Deck } from './types';
 
 export class GistHandler {
   /**
    * Import deck from URL (supports GitHub Gist, raw URLs, or any markdown URL)
    */
-  static async importFromURL(storage: any): Promise<{ deckName: string; cardsCount: number } | null> {
+  static async importFromURL(storage: StorageManager | SQLiteStorage): Promise<{ deckName: string; cardsCount: number } | null> {
     const url = await vscode.window.showInputBox({
       prompt: 'Enter Gist URL or raw markdown URL',
       placeHolder: 'https://gist.github.com/username/...',
@@ -80,7 +85,7 @@ export class GistHandler {
    */
   private static convertToRawUrl(url: string): string {
     // https://gist.github.com/username/gist_id -> https://gist.githubusercontent.com/username/gist_id/raw
-    const gistMatch = url.match(/gist\.github\.com\/([^\/]+)\/([a-f0-9]+)/);
+    const gistMatch = url.match(/gist\.github\.com\/([^/]+)\/([a-f0-9]+)/);
     if (gistMatch) {
       return `https://gist.githubusercontent.com/${gistMatch[1]}/${gistMatch[2]}/raw`;
     }
@@ -94,16 +99,13 @@ export class GistHandler {
    */
   private static async fetchContent(url: string): Promise<string | null> {
     try {
-      const https = require('https');
-      const http = require('http');
-
       const client = url.startsWith('https') ? https : http;
 
       return new Promise((resolve, reject) => {
-        client.get(url, (res: any) => {
+        client.get(url, (res: http.IncomingMessage) => {
           if (res.statusCode === 302 || res.statusCode === 301) {
             // Handle redirect
-            this.fetchContent(res.headers.location).then(resolve).catch(reject);
+            this.fetchContent(res.headers.location ?? '').then(resolve).catch(reject);
             return;
           }
 
@@ -113,14 +115,14 @@ export class GistHandler {
           }
 
           let data = '';
-          res.on('data', (chunk: any) => {
-            data += chunk;
+          res.on('data', (chunk: Buffer) => {
+            data += chunk.toString();
           });
 
           res.on('end', () => {
             resolve(data);
           });
-        }).on('error', (err: any) => {
+        }).on('error', (err: Error) => {
           reject(err);
         });
       });
@@ -132,7 +134,7 @@ export class GistHandler {
   /**
    * Share deck to clipboard as markdown (user can manually create Gist)
    */
-  static async shareDeckAsMarkdown(storage: any, deckId?: string): Promise<void> {
+  static async shareDeckAsMarkdown(storage: StorageManager | SQLiteStorage, deckId?: string): Promise<void> {
     let selectedDeckId = deckId;
 
     if (!selectedDeckId) {
@@ -148,7 +150,7 @@ export class GistHandler {
         deckId: string;
       }
 
-      const deckItems: DeckQuickPickItem[] = decks.map((d: any) => ({
+      const deckItems: DeckQuickPickItem[] = decks.map((d: Deck) => ({
         label: d.name,
         description: `${d.card_ids.length} cards`,
         deckId: d.id
@@ -165,7 +167,7 @@ export class GistHandler {
       selectedDeckId = selected.deckId;
     }
 
-    const deck = (await storage.getDecks()).find((d: any) => d.id === selectedDeckId);
+    const deck = (await storage.getDecks()).find((d: Deck) => d.id === selectedDeckId);
     const cards = await storage.getCardsByDeck(selectedDeckId);
 
     if (cards.length === 0) {

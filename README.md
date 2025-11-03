@@ -104,7 +104,8 @@ Click **"▶ Start Review"** on any deck and begin your learning journey!
 
 #### From Markdown (Recommended for Developers! 🚀)
 
-Create a `.md` file:
+**Markdown Format:**
+Create a `.md` file where H2 headings (##) are card fronts and paragraphs are backs:
 
 ```markdown
 # JavaScript Basics
@@ -119,13 +120,23 @@ Block-scoped variable declaration
 Concise function syntax: (x) => x * 2
 ```
 
-Then run: `Kioku: Import from Markdown`
+**Import Methods:**
 
-#### From Home Screen
-1. Click **Home** in the Kioku sidebar
-2. Click **📥 Import Deck from Markdown**
-3. Select your markdown file
-4. Done! Cards appear instantly
+1. **Via Command Palette** (⌘+Shift+P / Ctrl+Shift+P):
+   - Type `Kioku: Import from Markdown`
+   - Select your `.md` file
+   - Cards are automatically created
+
+2. **Via Home Screen**:
+   - Click **Home** in the Kioku sidebar
+   - Click **📥 Import Deck from Markdown**
+   - Select your markdown file
+   - Done! Cards appear instantly
+
+3. **From Current File**:
+   - Open any `.md` file in the editor
+   - Run `Kioku: Create Cards from Current Markdown File`
+   - Instant import without file picker
 
 #### Quick Add
 1. Browse a deck
@@ -163,22 +174,97 @@ Then run: `Kioku: Import from Markdown`
 
 ## 🎨 Templates
 
-Kioku includes ready-to-use templates:
+Kioku includes **3 ready-to-use template decks** in the `templates/` directory. Import them to start learning immediately!
+
+### 📥 How to Use Templates
+
+1. Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
+2. Run `Kioku: Import from Markdown`
+3. Navigate to the `templates/` folder
+4. Select one of the template files below
+5. Start reviewing!
+
+**Or use the Home Screen:**
+- Click **Home** → **📥 Import Deck from Markdown** → Select template
+
+---
 
 ### 🇬🇧 TOEIC Golden Words (600 Level)
-100 essential business vocabulary words in Japanese
-- Categories: Business, Office, Finance, Customer Service
-- Perfect for TOEIC test preparation
+**File:** `templates/toeic/golden-word.md`
 
-### 💻 基本情報技術者試験
-100 key terms for the Fundamental IT Engineer Exam
-- Topics: Computer Architecture, Networking, Databases, Security
-- Complete with Japanese explanations
+100 essential business vocabulary words for TOEIC preparation
+- **Categories**: Basic Business, Office, Finance, Customer Service
+- **Format**: English word → Japanese definition
+- **Level**: TOEIC 600 target score
+- **Example**:
+  - Front: `accomplish`
+  - Back: `達成する、成し遂げる`
+
+Perfect for Japanese speakers preparing for TOEIC!
+
+---
+
+### 💻 基本情報技術者試験 (Fundamental IT Engineer Exam)
+**File:** `templates/kihon-joho/basic-terms.md`
+
+100 key technical terms for the Japanese IT Engineer certification
+- **Topics**:
+  - Computer Architecture (CPU, ALU, Cache)
+  - Networking (TCP/IP, OSI Model)
+  - Databases (SQL, Normalization)
+  - Security (Encryption, Authentication)
+  - Software Engineering
+- **Format**: Technical term → Japanese explanation
+- **Example**:
+  - Front: `CPU (Central Processing Unit)`
+  - Back: `中央処理装置。コンピュータの中心となる演算・制御を行う装置`
+
+Ideal for 基本情報技術者試験 preparation!
+
+---
 
 ### 🇯🇵 JLPT N5 Vocabulary
+**File:** `templates/japanese-learning/jlpt-n5-vocabulary.md`
+
 150 basic Japanese words for beginners
-- Categories: Greetings, Numbers, Family, Time, Food, Places
-- With romaji and English translations
+- **Categories**:
+  - Greetings & Daily Expressions
+  - Numbers & Time
+  - Family & People
+  - Food & Drinks
+  - Places & Directions
+  - Common Adjectives & Verbs
+- **Format**: Japanese (romaji) → English translation
+- **Example**:
+  - Front: `おはよう (ohayou)`
+  - Back: `Good morning (casual)`
+
+Perfect for JLPT N5 exam preparation or Japanese beginners!
+
+---
+
+### 🎯 Creating Your Own Template
+
+Want to create custom templates? Just follow the markdown format:
+
+```markdown
+# Your Deck Name
+
+## Category 1
+
+### Card Front 1
+Card back explanation
+
+### Card Front 2
+Card back explanation
+
+## Category 2
+
+### Card Front 3
+Card back explanation
+```
+
+Save as `.md` and import using any of the methods above!
 
 ## ⚙️ Settings
 

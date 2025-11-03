@@ -1,13 +1,8 @@
 import * as vscode from 'vscode';
 import { v4 as uuidv4 } from 'uuid';
-import { Card } from './types';
-
-interface ParsedCard {
-  front: string;
-  back: string;
-  tags: string[];
-  examples?: string[];
-}
+import { Card, Deck } from './types';
+import { StorageManager } from './storage';
+import { SQLiteStorage } from './sqliteStorage';
 
 export class MarkdownHandler {
   /**
@@ -159,7 +154,7 @@ export class MarkdownHandler {
    * Import cards from markdown file
    */
   static async importFromMarkdown(
-    storage: any,
+    storage: StorageManager | SQLiteStorage,
     filePath?: string
   ): Promise<{ deckName: string; cardsCount: number } | null> {
     let content: string;
@@ -226,7 +221,7 @@ export class MarkdownHandler {
   /**
    * Create cards from currently open markdown file
    */
-  static async createFromCurrentMarkdownFile(storage: any): Promise<{ deckName: string; cardsCount: number } | null> {
+  static async createFromCurrentMarkdownFile(storage: StorageManager | SQLiteStorage): Promise<{ deckName: string; cardsCount: number } | null> {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
@@ -280,7 +275,7 @@ export class MarkdownHandler {
   /**
    * Export deck to markdown format
    */
-  static async exportToMarkdown(storage: any, deckId?: string): Promise<void> {
+  static async exportToMarkdown(storage: StorageManager | SQLiteStorage, deckId?: string): Promise<void> {
     let selectedDeckId = deckId;
 
     if (!selectedDeckId) {
@@ -296,7 +291,7 @@ export class MarkdownHandler {
         deckId: string;
       }
 
-      const deckItems: DeckQuickPickItem[] = decks.map((d: any) => ({
+      const deckItems: DeckQuickPickItem[] = decks.map((d: Deck) => ({
         label: d.name,
         description: `${d.card_ids.length} cards`,
         deckId: d.id
@@ -313,7 +308,7 @@ export class MarkdownHandler {
       selectedDeckId = selected.deckId;
     }
 
-    const deck = (await storage.getDecks()).find((d: any) => d.id === selectedDeckId);
+    const deck = (await storage.getDecks()).find((d: Deck) => d.id === selectedDeckId);
     const cards = await storage.getCardsByDeck(selectedDeckId);
 
     if (cards.length === 0) {

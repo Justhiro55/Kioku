@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { Card, Deck } from './types';
+import { Card } from './types';
 import { StorageManager } from './storage';
 
 /**

@@ -94,7 +94,7 @@ export class StatisticsManager {
 
     let streak = 0;
     const today = new Date().toISOString().split('T')[0];
-    let checkDate = new Date(today);
+    const checkDate = new Date(today);
 
     // Check if reviewed today or yesterday (allow 1 day gap)
     const lastReviewDate = dates[0];
@@ -129,8 +129,8 @@ export class StatisticsManager {
 
     let totalReviews = 0;
     let totalCorrect = 0;
-    let totalInterval = 0;
-    let intervalCount = 0;
+    const totalInterval = 0;
+    const intervalCount = 0;
 
     sessions.forEach(session => {
       totalReviews += session.cards_reviewed;

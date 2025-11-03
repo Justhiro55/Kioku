@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import Database from 'better-sqlite3';
 import { Card, Deck } from './types';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,7 +16,6 @@ export class SQLiteStorage {
     const dbPath = path.join(context.globalStorageUri.fsPath, 'kioku.db');
 
     // Ensure directory exists
-    const fs = require('fs');
     const dir = path.dirname(dbPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -183,7 +183,7 @@ export class SQLiteStorage {
 
   async createDeck(name: string): Promise<Deck> {
     const newDeck: Deck = {
-      id: require('uuid').v4(),
+      id: uuidv4(),
       name,
       card_ids: [],
       created_at: new Date().toISOString()

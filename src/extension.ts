@@ -482,7 +482,7 @@ async function openDeck() {
 /**
  * Edit a card
  */
-async function editCard(item: any) {
+async function editCard(item: vscode.TreeItem & { card?: Card }) {
   let card: Card | undefined;
 
   if (item && item.card) {
@@ -565,7 +565,7 @@ async function editCard(item: any) {
 /**
  * Delete a card
  */
-async function deleteCard(item: any) {
+async function deleteCard(item: vscode.TreeItem & { card?: Card }) {
   let card: Card | undefined;
 
   if (item && item.card) {
@@ -644,7 +644,7 @@ async function createDeck() {
 /**
  * Delete a deck
  */
-async function deleteDeck(item: any) {
+async function deleteDeck(item: vscode.TreeItem & { deck?: Deck }) {
   let deckId: string | undefined;
 
   if (item && item.deck) {
@@ -689,8 +689,9 @@ async function deleteDeck(item: any) {
       vscode.window.showInformationMessage('Deck deleted');
       deckTreeProvider.refresh();
       updateStatusBar();
-    } catch (error: any) {
-      vscode.window.showErrorMessage(error.message);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      vscode.window.showErrorMessage(message);
     }
   }
 }
@@ -769,7 +770,7 @@ function clearFilters() {
 /**
  * Review specific deck
  */
-async function reviewDeck(item: any) {
+async function reviewDeck(item: vscode.TreeItem & { deck?: Deck }) {
   if (item && item.deck) {
     await startReview(item.deck.id);
   }

@@ -74,8 +74,9 @@ export async function migrateToSQLite(
       `Migration complete! Migrated ${migratedCount} cards. Please reload VSCode.`
     );
 
-  } catch (error: any) {
-    vscode.window.showErrorMessage(`Migration failed: ${error.message}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    vscode.window.showErrorMessage(`Migration failed: ${message}`);
   } finally {
     sqliteStorage.close();
   }
@@ -120,8 +121,9 @@ export async function exportToGlobalState(
 
     vscode.window.showInformationMessage('Export to globalState complete!');
 
-  } catch (error: any) {
-    vscode.window.showErrorMessage(`Export failed: ${error.message}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    vscode.window.showErrorMessage(`Export failed: ${message}`);
   } finally {
     sqliteStorage.close();
   }
