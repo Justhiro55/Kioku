@@ -262,7 +262,7 @@ export class SQLiteStorage {
   }
 
   private async getCardIdsByDeck(deckId: string): Promise<string[]> {
-    const rows = this.db.prepare('SELECT id FROM cards WHERE deck_id = ?').all(deckId) as any[];
+    const rows = this.db.prepare('SELECT id FROM cards WHERE deck_id = ?').all(deckId) as { id: string }[];
     return rows.map(row => row.id);
   }
 
