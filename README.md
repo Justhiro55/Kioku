@@ -255,8 +255,6 @@ If you find Kioku helpful:
 
 <div align="center">
 
-**Made with ❤️ for developers who never stop learning**
-
 [Install Now](https://marketplace.visualstudio.com/items?itemName=Justhiro55.kioku) | [Documentation](https://github.com/Justhiro55/Kioku#readme) | [Report Issue](https://github.com/Justhiro55/Kioku/issues)
 
 </div>

@@ -252,7 +252,3 @@ Have a great template deck to share? Contribute to Kioku!
 - [Kioku Documentation](../README.md)
 - [Spaced Repetition (SM-2 Algorithm)](https://en.wikipedia.org/wiki/SuperMemo#SM-2_algorithm)
 - [Effective Flashcard Creation](https://www.supermemo.com/en/archives1990-2015/articles/20rules)
-
----
-
-**Happy Learning! 📚✨**
