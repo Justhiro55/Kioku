@@ -110,18 +110,41 @@ export class HomeWebviewProvider {
       width: 100%;
       max-width: 600px;
       margin: 0 auto 40px;
-      padding: 30px;
-      background: linear-gradient(135deg, var(--vscode-button-background) 0%, var(--vscode-button-hoverBackground) 100%);
-      border: none;
-      border-radius: 12px;
+      padding: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: 3px solid #764ba2;
+      border-radius: 16px;
       cursor: pointer;
       display: block;
-      transition: transform 0.2s;
+      transition: all 0.3s;
+      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .all-decks-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .all-decks-button:hover::before {
+      left: 100%;
     }
 
     .all-decks-button:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.6);
+      border-color: #667eea;
+    }
+
+    .all-decks-button:active {
+      transform: translateY(-2px) scale(0.98);
     }
 
     .all-decks-content {
@@ -135,22 +158,29 @@ export class HomeWebviewProvider {
     }
 
     .all-decks-title {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: bold;
-      color: var(--vscode-button-foreground);
-      margin-bottom: 5px;
+      color: white;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .all-decks-subtitle {
-      font-size: 14px;
-      color: var(--vscode-button-foreground);
-      opacity: 0.8;
+      font-size: 16px;
+      color: white;
+      opacity: 0.9;
     }
 
     .all-decks-badge {
-      font-size: 36px;
+      font-size: 48px;
       font-weight: bold;
-      color: var(--vscode-button-foreground);
+      color: white;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px 20px;
+      border-radius: 12px;
+      min-width: 80px;
+      text-align: center;
+      backdrop-filter: blur(10px);
     }
 
     .decks-container {
@@ -173,16 +203,34 @@ export class HomeWebviewProvider {
     .deck-card {
       background: var(--vscode-input-background);
       border: 2px solid var(--vscode-input-border);
-      border-radius: 8px;
-      padding: 20px;
+      border-radius: 12px;
+      padding: 24px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .deck-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+
+    .deck-card:hover::before {
+      transform: scaleX(1);
     }
 
     .deck-card:hover {
-      border-color: var(--vscode-button-background);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border-color: #667eea;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
     }
 
     .deck-card.no-due {
