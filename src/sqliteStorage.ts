@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import Database from 'better-sqlite3';
-import { Card, Deck } from './types';
+import { Card, Deck, CardState } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface CardRow {
@@ -17,6 +17,10 @@ interface CardRow {
   ease: number;
   deck_id: string;
   image?: string;
+  state: string;
+  lapses: number;
+  learning_step: number;
+  last_review?: string;
 }
 
 interface DeckRow {
@@ -257,7 +261,11 @@ export class SQLiteStorage {
       reps: row.reps,
       ease: row.ease,
       deckId: row.deck_id,
-      created_at: row.created_at
+      created_at: row.created_at,
+      state: (row.state as CardState) || CardState.NEW,
+      lapses: row.lapses || 0,
+      learningStep: row.learning_step || 0,
+      lastReview: row.last_review
     };
   }
 

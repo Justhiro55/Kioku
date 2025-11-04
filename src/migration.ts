@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { StorageManager } from './storage';
 import { SQLiteStorage } from './sqliteStorage';
+import { CardState } from './types';
 
 /**
  * Migrate data from globalState to SQLite
@@ -55,7 +56,11 @@ export async function migrateToSQLite(
           interval: card.interval,
           reps: card.reps,
           ease: card.ease,
-          deckId: card.deckId
+          deckId: card.deckId,
+          state: card.state || CardState.NEW,
+          lapses: card.lapses || 0,
+          learningStep: card.learningStep || 0,
+          lastReview: card.lastReview
         });
         migratedCount++;
       } catch (error) {

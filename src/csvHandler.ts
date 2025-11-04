@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { Card } from './types';
+import { SM2Algorithm } from './sm2';
 import { StorageManager } from './storage';
 
 /**
@@ -119,7 +120,7 @@ function parseCSVToCards(
       continue; // Skip invalid lines
     }
 
-    const card: Omit<Card, 'id' | 'created_at'> = {
+    const card: Omit<Card, 'id' | 'created_at'> = SM2Algorithm.initializeCard({
       front: fields[0] || '',
       back: fields[1] || '',
       tags: fields[2] ? fields[2].split('|').filter(t => t) : [],
@@ -128,7 +129,7 @@ function parseCSVToCards(
       reps: parseInt(fields[5]) || 0,
       ease: parseFloat(fields[6]) || 2.5,
       deckId: deckId || ''
-    };
+    });
 
     if (card.front && card.back) {
       cards.push(card);

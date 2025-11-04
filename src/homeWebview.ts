@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 import { StorageManager } from './storage';
 import { SM2Algorithm } from './sm2';
 import { StatisticsManager } from './statistics';
-import { Card, Deck } from './types';
+import { SettingsManager } from './settingsManager';
+import { Card, Deck, CardState } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface WebviewMessage {
@@ -12,6 +13,7 @@ interface WebviewMessage {
   front?: string;
   back?: string;
   tags?: string;
+  dailyLimit?: number;
 }
 
 interface DeckStat {
@@ -19,6 +21,14 @@ interface DeckStat {
   name: string;
   totalCards: number;
   dueCards: number;
+  newCards: number;        // 🔵 新規カード数
+  learningCards: number;   // 🔴 学習中カード数
+  reviewCards: number;     // 🟢 復習カード数
+  dailyProgress?: {
+    reviewedCount: number;
+    targetCount: number;
+    isCompleted: boolean;
+  };
 }
 
 interface RecentStat {
@@ -35,6 +45,7 @@ interface Stats {
 export class HomeWebviewProvider {
   private panel: vscode.WebviewPanel | undefined;
   private statisticsManager: StatisticsManager;
+  private settingsManager: SettingsManager;
 
   constructor(
     private context: vscode.ExtensionContext,
@@ -44,6 +55,7 @@ export class HomeWebviewProvider {
     private onImportDeck?: () => void
   ) {
     this.statisticsManager = new StatisticsManager(context);
+    this.settingsManager = new SettingsManager(context);
   }
 
   async show() {
@@ -102,6 +114,9 @@ export class HomeWebviewProvider {
     } else if (message.command === 'saveNewCard' && message.deckId && message.front && message.back) {
       await this.saveNewCard(message.deckId, message.front, message.back);
       await this.showDeckBrowser(message.deckId);
+    } else if (message.command === 'updateDailyLimit' && message.dailyLimit !== undefined) {
+      await this.settingsManager.setDailyNewCards(message.dailyLimit);
+      await this.updateWebview();
     }
   }
 
@@ -137,18 +152,14 @@ export class HomeWebviewProvider {
   }
 
   private async saveNewCard(deckId: string, front: string, back: string) {
-    const newCard: Card = {
+    // Use SM2Algorithm to initialize card with proper defaults
+    const newCard: Card = SM2Algorithm.initializeCard({
       id: uuidv4(),
       front,
       back,
       tags: [],
-      deckId: deckId,
-      created_at: new Date().toISOString(),
-      due_at: new Date().toISOString(),
-      interval: 0,
-      reps: 0,
-      ease: 2.5
-    };
+      deckId: deckId
+    });
 
     // Add card to deck
     const deck = (await this.storage.getDecks()).find(d => d.id === deckId);
@@ -177,12 +188,28 @@ export class HomeWebviewProvider {
     // Calculate stats for each deck
     const deckStats = await Promise.all(decks.map(async (deck) => {
       const deckCards = await this.storage.getCardsByDeck(deck.id);
-      const dueCards = SM2Algorithm.getDueCards(deckCards);
+      const dueCards = SM2Algorithm.getDueCards(deckCards, dailyLimit);
+
+      // Get card counts by state (Anki-style)
+      const cardCounts = SM2Algorithm.getCardCounts(deckCards);
+
+      // Get daily progress for this deck
+      const progress = this.settingsManager.getDailyProgress(deck.id);
+      const dailyProgress = progress ? {
+        reviewedCount: progress.reviewedCount,
+        targetCount: progress.targetCount,
+        isCompleted: this.settingsManager.isDailyGoalCompleted(deck.id)
+      } : undefined;
+
       return {
         id: deck.id,
         name: deck.name,
         totalCards: deckCards.length,
-        dueCards: dueCards.length
+        dueCards: dueCards.length,
+        newCards: cardCounts.new,
+        learningCards: cardCounts.learning,
+        reviewCards: cardCounts.review,
+        dailyProgress
       };
     }));
 
@@ -192,11 +219,12 @@ export class HomeWebviewProvider {
     // Get calendar data
     const recentStats = await this.statisticsManager.getRecentStats(90);
     const stats = await this.statisticsManager.getStatistics(allCards.length);
+    const dailyLimit = this.settingsManager.getDailyNewCards();
 
-    this.panel.webview.html = this.getWebviewContent(deckStats, totalDue, recentStats, stats);
+    this.panel.webview.html = this.getWebviewContent(deckStats, totalDue, recentStats, stats, dailyLimit);
   }
 
-  private getWebviewContent(deckStats: DeckStat[], totalDue: number, recentStats: RecentStat[], stats: Stats): string {
+  private getWebviewContent(deckStats: DeckStat[], totalDue: number, recentStats: RecentStat[], stats: Stats, dailyLimit: number): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -230,6 +258,64 @@ export class HomeWebviewProvider {
     .subtitle {
       font-size: 18px;
       color: var(--vscode-descriptionForeground);
+    }
+
+    .settings-section {
+      max-width: 600px;
+      margin: 0 auto 20px;
+      padding: 16px 20px;
+      background: var(--vscode-input-background);
+      border: 1px solid var(--vscode-input-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .settings-label {
+      font-size: 14px;
+      color: var(--vscode-descriptionForeground);
+      font-weight: 500;
+    }
+
+    .settings-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .limit-btn {
+      width: 32px;
+      height: 32px;
+      background: var(--vscode-button-secondaryBackground);
+      color: var(--vscode-button-secondaryForeground);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .limit-btn:hover {
+      background: var(--vscode-button-secondaryHoverBackground);
+      transform: scale(1.1);
+    }
+
+    .limit-btn:active {
+      transform: scale(0.95);
+    }
+
+    .limit-value {
+      min-width: 50px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--vscode-foreground);
     }
 
     .import-section {
@@ -409,10 +495,19 @@ export class HomeWebviewProvider {
 
     .deck-stats {
       display: flex;
-      justify-content: space-between;
-      font-size: 14px;
+      gap: 8px;
+      justify-content: center;
+      font-size: 13px;
       color: var(--vscode-descriptionForeground);
       margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .deck-stats span {
+      background: var(--vscode-input-background);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 500;
     }
 
     .deck-due {
@@ -423,6 +518,45 @@ export class HomeWebviewProvider {
     .deck-done {
       color: #28a745;
       font-weight: bold;
+    }
+
+    .deck-progress {
+      margin: 10px 0;
+      font-size: 12px;
+      color: var(--vscode-descriptionForeground);
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: var(--vscode-input-border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-bar.completed {
+      background: linear-gradient(90deg, #28a745, #20c997);
+    }
+
+    .daily-completed-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: rgba(40, 167, 69, 0.15);
+      color: #28a745;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
     }
 
     .deck-actions {
@@ -647,6 +781,15 @@ export class HomeWebviewProvider {
     <p class="subtitle">Your flashcard learning companion</p>
   </div>
 
+  <div class="settings-section">
+    <div class="settings-label">Daily review limit</div>
+    <div class="settings-controls">
+      <button class="limit-btn" onclick="updateDailyLimit(${dailyLimit - 5})">−</button>
+      <div class="limit-value">${dailyLimit}</div>
+      <button class="limit-btn" onclick="updateDailyLimit(${dailyLimit + 5})">+</button>
+    </div>
+  </div>
+
   <div class="import-section">
     <button class="import-btn" onclick="importDeck()">
       <span class="import-icon">📥</span>
@@ -675,12 +818,29 @@ export class HomeWebviewProvider {
             <div class="deck-icon">${deck.dueCards > 0 ? '📖' : '✅'}</div>
             <div class="deck-name">${this.escapeHtml(deck.name)}</div>
             <div class="deck-stats">
-              <span>${deck.totalCards} cards</span>
-              ${deck.dueCards > 0
-                ? `<span class="deck-due">${deck.dueCards} due</span>`
-                : `<span class="deck-done">All done!</span>`
-              }
+              <span>🔵 ${deck.newCards} 新規</span>
+              <span>🔴 ${deck.learningCards} 学習中</span>
+              <span>🟢 ${deck.reviewCards} 復習</span>
             </div>
+            ${deck.dailyProgress ? `
+              <div class="deck-progress">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span>${deck.dailyProgress.reviewedCount} / ${deck.dailyProgress.targetCount} 今日の進捗</span>
+                  <span>${Math.round((deck.dailyProgress.reviewedCount / deck.dailyProgress.targetCount) * 100)}%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar ${deck.dailyProgress.isCompleted ? 'completed' : ''}"
+                       style="width: ${Math.min((deck.dailyProgress.reviewedCount / deck.dailyProgress.targetCount) * 100, 100)}%">
+                  </div>
+                </div>
+                ${deck.dailyProgress.isCompleted ? `
+                  <div class="daily-completed-badge">
+                    <span>✓</span>
+                    <span>今日の目標達成</span>
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
             <div class="deck-actions">
               ${deck.dueCards > 0 ? `
                 <button class="deck-action-btn review" onclick="startReview('${deck.id}'); event.stopPropagation();">
@@ -782,6 +942,17 @@ export class HomeWebviewProvider {
     function importDeck() {
       vscode.postMessage({
         command: 'importDeck'
+      });
+    }
+
+    function updateDailyLimit(newLimit) {
+      // Minimum limit is 5
+      if (newLimit < 5) {
+        newLimit = 5;
+      }
+      vscode.postMessage({
+        command: 'updateDailyLimit',
+        dailyLimit: newLimit
       });
     }
   </script>

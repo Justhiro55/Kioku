@@ -214,18 +214,13 @@ async function addFromSelection() {
   // Get default deck
   const defaultDeck = await storage.getDefaultDeck();
 
-  // Create card with initial SM-2 values
-  const now = new Date();
-  const card: Omit<Card, 'id' | 'created_at'> = {
+  // Create card with initial SM-2 values using SM2Algorithm
+  const card: Omit<Card, 'id' | 'created_at'> = SM2Algorithm.initializeCard({
     front,
     back,
     tags,
-    due_at: now.toISOString(), // Due immediately
-    interval: 0,
-    reps: 0,
-    ease: 2.5, // Default ease factor
     deckId: defaultDeck.id
-  };
+  });
 
   await storage.saveCard(card);
   vscode.window.showInformationMessage(`Card added: ${front}`);

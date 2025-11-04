@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Card, Deck } from './types';
 import { StorageManager } from './storage';
 import { SQLiteStorage } from './sqliteStorage';
+import { SM2Algorithm } from './sm2';
 
 export class MarkdownHandler {
   /**
@@ -124,18 +125,14 @@ export class MarkdownHandler {
       fullBack += '\n\n' + examples.join('\n\n');
     }
 
-    return {
+    // Use SM2Algorithm to initialize card with proper defaults
+    return SM2Algorithm.initializeCard({
       id: uuidv4(),
       front,
       back: fullBack,
       tags,
-      created_at: new Date().toISOString(),
-      due_at: new Date().toISOString(),
-      interval: 0,
-      reps: 0,
-      ease: 2.5,
       deckId
-    };
+    });
   }
 
   /**

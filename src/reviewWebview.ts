@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
-import { Card } from './types';
+import { Card, CardState } from './types';
 import { StorageManager } from './storage';
 import { SM2Algorithm } from './sm2';
 import { StatisticsManager } from './statistics';
+import { SettingsManager } from './settingsManager';
 
 interface ReviewMessage {
   command: string;
@@ -17,6 +18,7 @@ export class ReviewWebviewProvider {
   private correctCount: number = 0;
   private startTime: number = 0;
   private statisticsManager: StatisticsManager;
+  private settingsManager: SettingsManager;
   private reviewHistory: Array<{ cardIndex: number; originalCard: Card }> = [];
 
   constructor(
@@ -27,6 +29,7 @@ export class ReviewWebviewProvider {
     private onBackToHome?: () => void
   ) {
     this.statisticsManager = new StatisticsManager(context);
+    this.settingsManager = new SettingsManager(context);
   }
 
   async show() {
@@ -37,7 +40,11 @@ export class ReviewWebviewProvider {
       allCards = await this.storage.getCardsByDeck(this.deckId);
     }
 
-    this.cards = SM2Algorithm.getDueCards(allCards);
+    // Get daily limit for new cards
+    const dailyLimit = this.settingsManager.getDailyNewCards();
+
+    // Get due cards with priority ordering (learning, review, new)
+    this.cards = SM2Algorithm.getDueCards(allCards, dailyLimit);
 
     if (this.cards.length === 0) {
       vscode.window.showInformationMessage('No cards due for review! 🎉');
@@ -182,12 +189,20 @@ export class ReviewWebviewProvider {
       duration_seconds: durationSeconds
     });
 
+    // Update daily progress if reviewing a specific deck
+    if (this.deckId) {
+      await this.settingsManager.updateDailyProgress(this.deckId, this.cards.length);
+    }
+
+    // Check if daily goal is completed
+    const isDailyGoalCompleted = this.deckId ? this.settingsManager.isDailyGoalCompleted(this.deckId) : false;
+
     // Show completion screen instead of closing
     const accuracy = Math.round((this.correctCount / this.cards.length) * 100);
-    this.showCompletionScreen(this.cards.length, this.correctCount, accuracy, durationSeconds);
+    this.showCompletionScreen(this.cards.length, this.correctCount, accuracy, durationSeconds, isDailyGoalCompleted);
   }
 
-  private showCompletionScreen(totalCards: number, correctCards: number, accuracy: number, durationSeconds: number) {
+  private showCompletionScreen(totalCards: number, correctCards: number, accuracy: number, durationSeconds: number, isDailyGoalCompleted: boolean) {
     if (!this.panel) {
       return;
     }
@@ -196,15 +211,20 @@ export class ReviewWebviewProvider {
     const seconds = durationSeconds % 60;
     const timeString = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 
-    this.panel.webview.html = this.getCompletionContent(totalCards, correctCards, accuracy, timeString);
+    this.panel.webview.html = this.getCompletionContent(totalCards, correctCards, accuracy, timeString, isDailyGoalCompleted);
   }
 
-  private getCompletionContent(totalCards: number, correctCards: number, accuracy: number, timeString: string): string {
+  private getCompletionContent(totalCards: number, correctCards: number, accuracy: number, timeString: string, isDailyGoalCompleted: boolean): string {
     let emoji = '🎉';
     let title = 'Great Job!';
     let message = 'Keep up the good work!';
 
-    if (accuracy === 100) {
+    // Override with daily goal completion message if applicable
+    if (isDailyGoalCompleted) {
+      emoji = '✅';
+      title = '今日の学習完了！';
+      message = 'このデッキの今日の目標を達成しました！';
+    } else if (accuracy === 100) {
       emoji = '🌟';
       title = 'Perfect!';
       message = 'You got every card right!';
@@ -467,12 +487,52 @@ export class ReviewWebviewProvider {
     );
   }
 
+  /**
+   * Get button intervals based on card state
+   */
+  private getButtonIntervals(card: Card): {
+    again: string;
+    hard: string;
+    good: string;
+    easy: string;
+  } {
+    if (card.state === CardState.NEW || card.state === CardState.LEARNING) {
+      return {
+        again: '1分',
+        hard: '1分',  // Not shown for learning cards
+        good: '10分',
+        easy: '4日'
+      };
+    } else if (card.state === CardState.RELEARNING) {
+      return {
+        again: '10分',
+        hard: '10分',  // Not shown for relearning cards
+        good: '1日',
+        easy: Math.round(card.interval * 1.3) + '日'
+      };
+    } else {
+      // Review card
+      const hardDays = Math.round(card.interval * 1.2);
+      const goodDays = Math.round(card.interval * card.ease);
+      const easyDays = Math.round(card.interval * card.ease * 1.3);
+
+      return {
+        again: '1日',
+        hard: hardDays + '日',
+        good: goodDays + '日',
+        easy: easyDays + '日'
+      };
+    }
+  }
+
   private getWebviewContent(
     card: Card,
     showingAnswer: boolean,
     progress: number,
     total: number
   ): string {
+    const intervals = this.getButtonIntervals(card);
+    const isReviewCard = card.state === CardState.REVIEW;
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -743,25 +803,27 @@ export class ReviewWebviewProvider {
     ` : `
       <div class="rating-buttons">
         <button class="rating-1" onclick="rate(1)">
-          <div class="rating-label">Again</div>
-          <div class="rating-time">&lt;1 min</div>
+          <div class="rating-label">もう一度</div>
+          <div class="rating-time">${intervals.again}</div>
         </button>
-        <button class="rating-2" onclick="rate(2)">
-          <div class="rating-label">Hard</div>
-          <div class="rating-time">&lt;10 min</div>
-        </button>
+        ${isReviewCard ? `
+          <button class="rating-2" onclick="rate(2)">
+            <div class="rating-label">難しい</div>
+            <div class="rating-time">${intervals.hard}</div>
+          </button>
+        ` : ''}
         <button class="rating-3" onclick="rate(3)">
-          <div class="rating-label">Good</div>
-          <div class="rating-time">1 day</div>
+          <div class="rating-label">正解</div>
+          <div class="rating-time">${intervals.good}</div>
         </button>
         <button class="rating-4" onclick="rate(4)">
-          <div class="rating-label">Easy</div>
-          <div class="rating-time">4 days</div>
+          <div class="rating-label">簡単</div>
+          <div class="rating-time">${intervals.easy}</div>
         </button>
       </div>
       <div style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--vscode-descriptionForeground); opacity: 0.8;">
         <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">1</kbd>
-        <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">2</kbd>
+        ${isReviewCard ? '<kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">2</kbd>' : ''}
         <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">3</kbd>
         <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">4</kbd>
         or <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">⌘Z</kbd> to undo

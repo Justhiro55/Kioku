@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { StorageManager } from './storage';
+import { SM2Algorithm } from './sm2';
 
 /**
  * JSON format for bulk import
@@ -57,17 +58,12 @@ export async function importFromJSON(storage: StorageManager): Promise<void> {
     // Import cards
     let importCount = 0;
     for (const card of validCards) {
-      const now = new Date();
-      await storage.saveCard({
+      await storage.saveCard(SM2Algorithm.initializeCard({
         front: card.front,
         back: card.back,
         tags: card.tags || [],
-        due_at: now.toISOString(),
-        interval: 0,
-        reps: 0,
-        ease: 2.5,
         deckId: defaultDeck.id
-      });
+      }));
       importCount++;
     }
 
@@ -128,16 +124,12 @@ export async function createFromJSONFile(storage: StorageManager): Promise<void>
     const now = new Date();
 
     for (const card of validCards) {
-      await storage.saveCard({
+      await storage.saveCard(SM2Algorithm.initializeCard({
         front: card.front,
         back: card.back,
         tags: card.tags || [],
-        due_at: now.toISOString(),
-        interval: 0,
-        reps: 0,
-        ease: 2.5,
         deckId: defaultDeck.id
-      });
+      }));
     }
 
     vscode.window.showInformationMessage(
