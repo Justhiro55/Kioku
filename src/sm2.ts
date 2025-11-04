@@ -196,11 +196,10 @@ export class SM2Algorithm {
 
   /**
    * Get cards that are due for review (priority order)
-   * 1. Learning/Relearning cards (due now)
-   * 2. Review cards (due today or earlier)
-   * 3. New cards (up to daily limit)
+   * Daily limit applies to total cards (learning + review + new)
+   * Priority: 1. Learning/Relearning 2. Review 3. New
    */
-  static getDueCards(cards: Card[], maxNewCards: number = 20): Card[] {
+  static getDueCards(cards: Card[], dailyLimit: number = 30): Card[] {
 
     // Separate cards by state
     const learningCards = cards.filter(c =>
@@ -213,12 +212,31 @@ export class SM2Algorithm {
       this.isDue(c)
     );
 
-    const newCards = cards
-      .filter(c => c.state === CardState.NEW)
-      .slice(0, maxNewCards);
+    const newCards = cards.filter(c => c.state === CardState.NEW);
 
-    // Return in priority order
-    return [...learningCards, ...reviewCards, ...newCards];
+    // Apply daily limit across all card types with priority
+    const result: Card[] = [];
+    let remaining = dailyLimit;
+
+    // Priority 1: Learning/Relearning cards (all of them)
+    const learningToAdd = learningCards.slice(0, remaining);
+    result.push(...learningToAdd);
+    remaining -= learningToAdd.length;
+
+    // Priority 2: Review cards
+    if (remaining > 0) {
+      const reviewToAdd = reviewCards.slice(0, remaining);
+      result.push(...reviewToAdd);
+      remaining -= reviewToAdd.length;
+    }
+
+    // Priority 3: New cards
+    if (remaining > 0) {
+      const newToAdd = newCards.slice(0, remaining);
+      result.push(...newToAdd);
+    }
+
+    return result;
   }
 
   /**

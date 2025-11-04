@@ -155,7 +155,12 @@ export class StorageManager {
    * Get all decks
    */
   async getDecks(): Promise<Deck[]> {
-    return this.context.globalState.get<Deck[]>(StorageManager.DECKS_KEY, []);
+    const decks = this.context.globalState.get<Deck[]>(StorageManager.DECKS_KEY, []);
+    // Remove duplicates by ID
+    const uniqueDecks = decks.filter((deck, index, self) =>
+      index === self.findIndex(d => d.id === deck.id)
+    );
+    return uniqueDecks;
   }
 
   /**

@@ -3,7 +3,7 @@ import { StorageManager } from './storage';
 import { SM2Algorithm } from './sm2';
 import { StatisticsManager } from './statistics';
 import { SettingsManager } from './settingsManager';
-import { Card, Deck } from './types';
+import { Card, Deck, CardState } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface WebviewMessage {
@@ -191,10 +191,24 @@ export class HomeWebviewProvider {
     // Calculate stats for each deck
     const deckStats = await Promise.all(decks.map(async (deck) => {
       const deckCards = await this.storage.getCardsByDeck(deck.id);
+
+      // Get due cards considering daily limit
       const dueCards = SM2Algorithm.getDueCards(deckCards, dailyLimit);
 
-      // Get card counts by state (Anki-style)
-      const cardCounts = SM2Algorithm.getCardCounts(deckCards);
+      // Count cards by state within the daily limit
+      let learningCount = 0;
+      let reviewCount = 0;
+      let newCount = 0;
+
+      for (const card of dueCards) {
+        if (card.state === CardState.LEARNING || card.state === CardState.RELEARNING) {
+          learningCount++;
+        } else if (card.state === CardState.REVIEW) {
+          reviewCount++;
+        } else if (card.state === CardState.NEW) {
+          newCount++;
+        }
+      }
 
       // Get daily progress for this deck
       const progress = this.settingsManager.getDailyProgress(deck.id);
@@ -209,15 +223,15 @@ export class HomeWebviewProvider {
         name: deck.name,
         totalCards: deckCards.length,
         dueCards: dueCards.length,
-        newCards: cardCounts.new,
-        learningCards: cardCounts.learning,
-        reviewCards: cardCounts.review,
+        newCards: newCount,
+        learningCards: learningCount,
+        reviewCards: reviewCount,
         dailyProgress
       };
     }));
 
-    // Calculate total due cards
-    const totalDue = SM2Algorithm.getDueCards(allCards).length;
+    // Calculate total due cards with daily limit
+    const totalDue = SM2Algorithm.getDueCards(allCards, dailyLimit).length;
 
     // Get calendar data
     const recentStats = await this.statisticsManager.getRecentStats(90);
