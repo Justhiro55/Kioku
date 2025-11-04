@@ -8,7 +8,6 @@
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/Justhiro55.kioku?color=blue&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=Justhiro55.kioku)
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/Justhiro55.kioku?color=success)](https://marketplace.visualstudio.com/items?itemName=Justhiro55.kioku)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/Justhiro55.kioku?color=yellow)](https://marketplace.visualstudio.com/items?itemName=Justhiro55.kioku)
 [![CI](https://github.com/Justhiro55/Kioku/actions/workflows/ci.yml/badge.svg)](https://github.com/Justhiro55/Kioku/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
