@@ -276,40 +276,52 @@ export class HomeWebviewProvider {
       color: var(--vscode-descriptionForeground);
     }
 
-    .settings-section {
-      max-width: 600px;
-      margin: 0 auto 20px;
-      padding: 16px 20px;
-      background: var(--vscode-input-background);
-      border: 1px solid var(--vscode-input-border);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
+    .controls-section {
+      max-width: 700px;
+      margin: 0 auto 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
 
-    .settings-label {
-      font-size: 14px;
+    .control-card {
+      padding: 20px;
+      background: var(--vscode-input-background);
+      border: 1px solid var(--vscode-input-border);
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+
+    .control-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .control-card-title {
+      font-size: 13px;
       color: var(--vscode-descriptionForeground);
-      font-weight: 500;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
     }
 
     .settings-controls {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      gap: 12px;
     }
 
     .limit-btn {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       background: var(--vscode-button-secondaryBackground);
       color: var(--vscode-button-secondaryForeground);
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
       display: flex;
       align-items: center;
@@ -327,120 +339,60 @@ export class HomeWebviewProvider {
     }
 
     .limit-value {
-      min-width: 50px;
+      min-width: 60px;
       text-align: center;
-      font-size: 18px;
+      font-size: 24px;
       font-weight: bold;
       color: var(--vscode-foreground);
-    }
-
-    .import-section {
-      max-width: 600px;
-      margin: 0 auto 30px;
     }
 
     .import-btn {
       width: 100%;
-      padding: 16px 24px;
-      background: var(--vscode-input-background);
-      border: 2px dashed var(--vscode-input-border);
-      border-radius: 12px;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--vscode-foreground);
-      transition: all 0.3s;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
     }
 
     .import-btn:hover {
-      border-color: #667eea;
-      background: rgba(102, 126, 234, 0.1);
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
 
     .import-icon {
-      font-size: 24px;
+      font-size: 18px;
     }
 
-    .all-decks-button {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto 40px;
-      padding: 40px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border: 3px solid #764ba2;
-      border-radius: 16px;
-      cursor: pointer;
-      display: block;
-      transition: all 0.3s;
-      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .all-decks-button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s;
-    }
-
-    .all-decks-button:hover::before {
-      left: 100%;
-    }
-
-    .all-decks-button:hover {
-      transform: translateY(-6px) scale(1.02);
-      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.6);
-      border-color: #667eea;
-    }
-
-    .all-decks-button:active {
-      transform: translateY(-2px) scale(0.98);
-    }
-
-    .all-decks-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .all-decks-text {
-      text-align: left;
-    }
-
-    .all-decks-title {
-      font-size: 28px;
-      font-weight: bold;
-      color: white;
-      margin-bottom: 8px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .all-decks-subtitle {
-      font-size: 16px;
-      color: white;
-      opacity: 0.9;
-    }
-
-    .all-decks-badge {
-      font-size: 48px;
-      font-weight: bold;
-      color: white;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 10px 20px;
-      border-radius: 12px;
-      min-width: 80px;
+    .footer {
+      max-width: 800px;
+      margin: 60px auto 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--vscode-input-border);
       text-align: center;
-      backdrop-filter: blur(10px);
+      font-size: 13px;
+      color: var(--vscode-descriptionForeground);
+    }
+
+    .footer a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .footer a:hover {
+      color: #764ba2;
+      text-decoration: underline;
     }
 
     .decks-container {
@@ -797,33 +749,24 @@ export class HomeWebviewProvider {
     <p class="subtitle">Your flashcard learning companion</p>
   </div>
 
-  <div class="settings-section">
-    <div class="settings-label">Daily review limit</div>
-    <div class="settings-controls">
-      <button class="limit-btn" onclick="updateDailyLimit(${dailyLimit - 5})">−</button>
-      <div class="limit-value">${dailyLimit}</div>
-      <button class="limit-btn" onclick="updateDailyLimit(${dailyLimit + 5})">+</button>
+  <div class="controls-section">
+    <div class="control-card">
+      <div class="control-card-title">📊 Daily Review Limit</div>
+      <div class="settings-controls">
+        <button class="limit-btn" onclick="updateDailyLimit(${dailyLimit - 5})">−</button>
+        <div class="limit-value">${dailyLimit}</div>
+        <button class="limit-btn" onclick="updateDailyLimit(${dailyLimit + 5})">+</button>
+      </div>
+    </div>
+
+    <div class="control-card">
+      <div class="control-card-title">📥 Import Deck</div>
+      <button class="import-btn" onclick="importDeck()">
+        <span class="import-icon">📄</span>
+        <span>Import from Markdown</span>
+      </button>
     </div>
   </div>
-
-  <div class="import-section">
-    <button class="import-btn" onclick="importDeck()">
-      <span class="import-icon">📥</span>
-      <span>Import Deck from Markdown</span>
-    </button>
-  </div>
-
-  ${totalDue > 0 ? `
-    <button class="all-decks-button" onclick="startReview(null)">
-      <div class="all-decks-content">
-        <div class="all-decks-text">
-          <div class="all-decks-title">📚 Review All Decks</div>
-          <div class="all-decks-subtitle">Start your learning session</div>
-        </div>
-        <div class="all-decks-badge">${totalDue}</div>
-      </div>
-    </button>
-  ` : ''}
 
   <div class="decks-container">
     ${deckStats.length > 0 ? `
@@ -924,6 +867,10 @@ export class HomeWebviewProvider {
       ` : ''}
     </div>
   ` : ''}
+
+  <div class="footer">
+    <p>Made with 🧠 by <a href="https://github.com/Justhiro55/Kioku" target="_blank">Kioku</a> • Open Source on GitHub</p>
+  </div>
 
   <script>
     const vscode = acquireVsCodeApi();
