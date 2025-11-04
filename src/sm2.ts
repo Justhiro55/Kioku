@@ -201,7 +201,6 @@ export class SM2Algorithm {
    * 3. New cards (up to daily limit)
    */
   static getDueCards(cards: Card[], maxNewCards: number = 20): Card[] {
-    const now = new Date();
 
     // Separate cards by state
     const learningCards = cards.filter(c =>
@@ -230,7 +229,6 @@ export class SM2Algorithm {
     learning: number;
     review: number;
   } {
-    const now = new Date();
 
     return {
       new: cards.filter(c => c.state === CardState.NEW).length,

@@ -121,7 +121,6 @@ export async function createFromJSONFile(storage: StorageManager): Promise<void>
     }
 
     const defaultDeck = await storage.getDefaultDeck();
-    const now = new Date();
 
     for (const card of validCards) {
       await storage.saveCard(SM2Algorithm.initializeCard({

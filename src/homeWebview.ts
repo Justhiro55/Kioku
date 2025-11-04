@@ -3,7 +3,7 @@ import { StorageManager } from './storage';
 import { SM2Algorithm } from './sm2';
 import { StatisticsManager } from './statistics';
 import { SettingsManager } from './settingsManager';
-import { Card, Deck, CardState } from './types';
+import { Card, Deck } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface WebviewMessage {
