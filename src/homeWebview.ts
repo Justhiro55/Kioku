@@ -185,6 +185,9 @@ export class HomeWebviewProvider {
     const decks = await this.storage.getDecks();
     const allCards = await this.storage.getCards();
 
+    // Get daily limit for new cards
+    const dailyLimit = this.settingsManager.getDailyNewCards();
+
     // Calculate stats for each deck
     const deckStats = await Promise.all(decks.map(async (deck) => {
       const deckCards = await this.storage.getCardsByDeck(deck.id);
@@ -219,7 +222,6 @@ export class HomeWebviewProvider {
     // Get calendar data
     const recentStats = await this.statisticsManager.getRecentStats(90);
     const stats = await this.statisticsManager.getStatistics(allCards.length);
-    const dailyLimit = this.settingsManager.getDailyNewCards();
 
     this.panel.webview.html = this.getWebviewContent(deckStats, totalDue, recentStats, stats, dailyLimit);
   }
