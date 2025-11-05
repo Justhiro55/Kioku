@@ -573,7 +573,6 @@ export class ReviewWebviewProvider {
     total: number
   ): string {
     const intervals = this.getButtonIntervals(card);
-    const isReviewCard = card.state === CardState.REVIEW;
 
     return `<!DOCTYPE html>
 <html lang="en">
