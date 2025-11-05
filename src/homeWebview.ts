@@ -456,26 +456,28 @@ export class HomeWebviewProvider {
       opacity: 0.8;
     }
 
-    .deck-header {
+    .deck-top {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 12px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+      padding: 0 4px;
     }
 
     .deck-icon {
-      font-size: 32px;
-      flex-shrink: 0;
+      font-size: 40px;
+      line-height: 1;
+      margin-left: 1px;
     }
 
     .deck-mode-badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 4px 10px;
+      padding: 6px 12px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: 11px;
       font-weight: 600;
       color: white;
@@ -483,18 +485,20 @@ export class HomeWebviewProvider {
       transition: all 0.2s;
       user-select: none;
       white-space: nowrap;
-      flex-shrink: 0;
+      margin-right: 1px;
     }
 
     .deck-mode-badge:hover {
-      transform: scale(1.05);
-      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
     }
 
     .deck-name {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      line-height: 1.3;
+      text-align: center;
     }
 
     .deck-stats {
@@ -810,7 +814,7 @@ export class HomeWebviewProvider {
       <div class="deck-grid">
         ${deckStats.map(deck => `
           <div class="deck-card ${deck.dueCards === 0 ? 'no-due' : ''}">
-            <div class="deck-header">
+            <div class="deck-top">
               <div class="deck-icon">${deck.dueCards > 0 ? '📖' : '✅'}</div>
               <div class="deck-mode-badge" onclick="toggleDeckMode('${deck.id}', '${deck.reviewMode === 'normal' ? 'spell' : 'normal'}'); event.stopPropagation();" title="Click to toggle">
                 ${deck.reviewMode === 'spell' ? '⌨️ Spell' : '👁️ Normal'}
