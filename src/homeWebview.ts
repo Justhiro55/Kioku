@@ -3,7 +3,7 @@ import { StorageManager } from './storage';
 import { SM2Algorithm } from './sm2';
 import { StatisticsManager } from './statistics';
 import { SettingsManager } from './settingsManager';
-import { Card, Deck, CardState } from './types';
+import { Card, Deck, CardState, ReviewMode } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface WebviewMessage {
@@ -14,6 +14,7 @@ interface WebviewMessage {
   back?: string;
   tags?: string;
   dailyLimit?: number;
+  reviewMode?: ReviewMode;
 }
 
 interface DeckStat {
@@ -24,6 +25,7 @@ interface DeckStat {
   newCards: number;        // 🔵 新規カード数
   learningCards: number;   // 🔴 学習中カード数
   reviewCards: number;     // 🟢 復習カード数
+  reviewMode: ReviewMode;  // 復習モード
   dailyProgress?: {
     reviewedCount: number;
     targetCount: number;
@@ -116,6 +118,9 @@ export class HomeWebviewProvider {
       await this.showDeckBrowser(message.deckId);
     } else if (message.command === 'updateDailyLimit' && message.dailyLimit !== undefined) {
       await this.settingsManager.setDailyNewCards(message.dailyLimit);
+      await this.updateWebview();
+    } else if (message.command === 'toggleDeckReviewMode' && message.deckId && message.reviewMode) {
+      await this.storage.updateDeckReviewMode(message.deckId, message.reviewMode);
       await this.updateWebview();
     }
   }
@@ -226,6 +231,7 @@ export class HomeWebviewProvider {
         newCards: newCount,
         learningCards: learningCount,
         reviewCards: reviewCount,
+        reviewMode: deck.reviewMode || 'normal',
         dailyProgress
       };
     }));
@@ -450,9 +456,39 @@ export class HomeWebviewProvider {
       opacity: 0.8;
     }
 
+    .deck-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
     .deck-icon {
       font-size: 32px;
-      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+
+    .deck-mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .deck-mode-badge:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
     }
 
     .deck-name {
@@ -774,7 +810,12 @@ export class HomeWebviewProvider {
       <div class="deck-grid">
         ${deckStats.map(deck => `
           <div class="deck-card ${deck.dueCards === 0 ? 'no-due' : ''}">
-            <div class="deck-icon">${deck.dueCards > 0 ? '📖' : '✅'}</div>
+            <div class="deck-header">
+              <div class="deck-icon">${deck.dueCards > 0 ? '📖' : '✅'}</div>
+              <div class="deck-mode-badge" onclick="toggleDeckMode('${deck.id}', '${deck.reviewMode === 'normal' ? 'spell' : 'normal'}'); event.stopPropagation();" title="Click to toggle">
+                ${deck.reviewMode === 'spell' ? '⌨️ Spell' : '👁️ Normal'}
+              </div>
+            </div>
             <div class="deck-name">${this.escapeHtml(deck.name)}</div>
             <div class="deck-stats">
               <span>🔵 ${deck.newCards} 新規</span>
@@ -905,6 +946,14 @@ export class HomeWebviewProvider {
     function importDeck() {
       vscode.postMessage({
         command: 'importDeck'
+      });
+    }
+
+    function toggleDeckMode(deckId, newMode) {
+      vscode.postMessage({
+        command: 'toggleDeckReviewMode',
+        deckId: deckId,
+        reviewMode: newMode
       });
     }
 

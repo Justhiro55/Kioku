@@ -4,10 +4,13 @@ import { StorageManager } from './storage';
 import { SM2Algorithm } from './sm2';
 import { StatisticsManager } from './statistics';
 import { SettingsManager } from './settingsManager';
+import { checkSpelling } from './utils/similarity';
 
 interface ReviewMessage {
   command: string;
   quality?: number;
+  userAnswer?: string;
+  mode?: 'normal' | 'spell';
 }
 
 export class ReviewWebviewProvider {
@@ -20,6 +23,12 @@ export class ReviewWebviewProvider {
   private statisticsManager: StatisticsManager;
   private settingsManager: SettingsManager;
   private reviewHistory: Array<{ cardIndex: number; originalCard: Card }> = [];
+  private spellMode: boolean = false;
+  private spellingResult?: {
+    userAnswer: string;
+    correctAnswer: string;
+    feedback: 'correct' | 'close' | 'wrong';
+  };
 
   constructor(
     private context: vscode.ExtensionContext,
@@ -38,6 +47,13 @@ export class ReviewWebviewProvider {
     // Filter by deck if specified
     if (this.deckId) {
       allCards = await this.storage.getCardsByDeck(this.deckId);
+
+      // Get deck's review mode
+      const deck = await this.storage.getDeck(this.deckId);
+      this.spellMode = deck?.reviewMode === 'spell';
+    } else {
+      // Default to normal mode for "all decks" review
+      this.spellMode = false;
     }
 
     // Get daily limit for new cards
@@ -86,6 +102,16 @@ export class ReviewWebviewProvider {
         this.updateWebview();
         break;
 
+      case 'submitAnswer':
+        if (this.spellMode && message.userAnswer !== undefined) {
+          await this.checkSpelling(message.userAnswer);
+        }
+        break;
+
+      case 'showHint':
+        this.updateWebview();
+        break;
+
       case 'rate':
         if (message.quality !== undefined) {
           await this.rateCard(message.quality);
@@ -118,6 +144,20 @@ export class ReviewWebviewProvider {
         }
         break;
     }
+  }
+
+  private async checkSpelling(userAnswer: string) {
+    const card = this.cards[this.currentIndex];
+    const result = checkSpelling(userAnswer, card.back);
+
+    this.spellingResult = {
+      userAnswer,
+      correctAnswer: card.back,
+      feedback: result.feedback
+    };
+
+    this.showingAnswer = true;
+    this.updateWebview();
   }
 
   private async rateCard(quality: number) {
@@ -169,6 +209,7 @@ export class ReviewWebviewProvider {
   private nextCard() {
     this.currentIndex++;
     this.showingAnswer = false;
+    this.spellingResult = undefined;
 
     if (this.currentIndex >= this.cards.length) {
       this.complete();
@@ -789,29 +830,70 @@ export class ReviewWebviewProvider {
     <div class="card">
       <div class="front">${this.escapeHtml(card.front)}</div>
 
+      ${this.spellMode && !showingAnswer ? `
+        <div class="input-container">
+          <input
+            type="text"
+            id="answer-input"
+            placeholder="答えを入力してください..."
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+          />
+          <div class="hint" id="hint-text" style="display: none;"></div>
+        </div>
+      ` : ''}
+
       ${showingAnswer ? `
-        <div class="answer">${this.escapeHtml(card.back)}</div>
+        ${this.spellMode && this.spellingResult ? `
+          <div class="answer">
+            ${this.spellingResult.feedback === 'correct' ? '✅ 正解！' :
+              this.spellingResult.feedback === 'close' ? '⚠️ 惜しい！' : '❌ 不正解'}
+          </div>
+          ${this.spellingResult.userAnswer !== this.spellingResult.correctAnswer ? `
+            <div style="margin-top: 20px; padding: 16px; background: var(--vscode-input-background); border-radius: 8px;">
+              <div style="margin-bottom: 8px;">
+                <strong>あなたの答え:</strong> ${this.escapeHtml(this.spellingResult.userAnswer)}
+              </div>
+              <div>
+                <strong>正しい答え:</strong> ${this.escapeHtml(this.spellingResult.correctAnswer)}
+              </div>
+            </div>
+          ` : ''}
+        ` : `
+          <div class="answer">${this.escapeHtml(card.back)}</div>
+        `}
       ` : ''}
     </div>
 
     ${!showingAnswer ? `
-      <div class="buttons">
-        <button onclick="showAnswer()">
-          Show Answer
-        </button>
-      </div>
+      ${this.spellMode ? `
+        <div class="buttons">
+          <button class="secondary" onclick="showHint()">
+            💡 ヒント
+          </button>
+          <button onclick="submitAnswer()">
+            回答
+          </button>
+        </div>
+      ` : `
+        <div class="buttons">
+          <button onclick="showAnswer()">
+            Show Answer
+          </button>
+        </div>
+      `}
     ` : `
       <div class="rating-buttons">
         <button class="rating-1" onclick="rate(1)">
           <div class="rating-label">もう一度</div>
           <div class="rating-time">${intervals.again}</div>
         </button>
-        ${isReviewCard ? `
-          <button class="rating-2" onclick="rate(2)">
-            <div class="rating-label">難しい</div>
-            <div class="rating-time">${intervals.hard}</div>
-          </button>
-        ` : ''}
+        <button class="rating-2" onclick="rate(2)">
+          <div class="rating-label">難しい</div>
+          <div class="rating-time">${intervals.hard}</div>
+        </button>
         <button class="rating-3" onclick="rate(3)">
           <div class="rating-label">正解</div>
           <div class="rating-time">${intervals.good}</div>
@@ -823,7 +905,7 @@ export class ReviewWebviewProvider {
       </div>
       <div style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--vscode-descriptionForeground); opacity: 0.8;">
         <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">1</kbd>
-        ${isReviewCard ? '<kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">2</kbd>' : ''}
+        <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">2</kbd>
         <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">3</kbd>
         <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">4</kbd>
         or <kbd style="background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--vscode-input-border); font-family: monospace; font-size: 11px;">⌘Z</kbd> to undo
@@ -834,6 +916,17 @@ export class ReviewWebviewProvider {
   <script>
     const vscode = acquireVsCodeApi();
     const showingAnswer = ${showingAnswer};
+    const spellMode = ${this.spellMode};
+    const correctAnswer = ${JSON.stringify(card.back)};
+    let hintShown = false;
+
+    // Focus input on load in spell mode
+    if (spellMode && !showingAnswer) {
+      setTimeout(() => {
+        const input = document.getElementById('answer-input');
+        if (input) input.focus();
+      }, 100);
+    }
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
@@ -845,9 +938,18 @@ export class ReviewWebviewProvider {
       }
 
       if (!showingAnswer) {
-        if (e.key === ' ' || e.key === 'Enter') {
-          e.preventDefault();
-          showAnswer();
+        if (spellMode) {
+          // In spell mode, Enter submits answer
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            submitAnswer();
+          }
+        } else {
+          // In normal mode, Space or Enter shows answer
+          if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            showAnswer();
+          }
         }
       } else {
         // Anki mode shortcuts (1-4)
@@ -860,6 +962,30 @@ export class ReviewWebviewProvider {
 
     function showAnswer() {
       vscode.postMessage({ command: 'showAnswer' });
+    }
+
+    function submitAnswer() {
+      const input = document.getElementById('answer-input');
+      if (input) {
+        const userAnswer = input.value.trim();
+        if (userAnswer) {
+          vscode.postMessage({
+            command: 'submitAnswer',
+            userAnswer: userAnswer
+          });
+        }
+      }
+    }
+
+    function showHint() {
+      if (!hintShown && correctAnswer) {
+        const hintText = document.getElementById('hint-text');
+        if (hintText) {
+          hintText.textContent = 'ヒント: ' + correctAnswer.charAt(0) + '...';
+          hintText.style.display = 'block';
+          hintShown = true;
+        }
+      }
     }
 
     function rate(quality) {

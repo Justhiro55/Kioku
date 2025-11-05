@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Card, Deck } from './types';
+import { Card, Deck, ReviewMode } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -239,5 +239,16 @@ export class StorageManager {
       throw new Error('Default deck not found');
     }
     return deck;
+  }
+
+  /**
+   * Update deck's review mode
+   */
+  async updateDeckReviewMode(deckId: string, reviewMode: ReviewMode): Promise<void> {
+    const deck = await this.getDeck(deckId);
+    if (deck) {
+      deck.reviewMode = reviewMode;
+      await this.updateDeck(deck);
+    }
   }
 }

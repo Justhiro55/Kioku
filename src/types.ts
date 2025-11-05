@@ -32,6 +32,11 @@ export interface Card {
 }
 
 /**
+ * Review mode for deck
+ */
+export type ReviewMode = 'normal' | 'spell';
+
+/**
  * Deck represents a collection of cards
  */
 export interface Deck {
@@ -39,6 +44,7 @@ export interface Deck {
   name: string;
   card_ids: string[];
   created_at: string;
+  reviewMode?: ReviewMode; // Default: 'normal'
 }
 
 /**
